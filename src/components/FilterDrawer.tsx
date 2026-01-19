@@ -5,9 +5,8 @@ import {
   SheetHeader, 
   SheetTitle, 
   SheetTrigger, 
-  SheetFooter,
-  SheetClose
-} from '@/components/ui/sheet'; // Using Dialog logic for the drawer
+  SheetFooter
+} from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { SlidersHorizontal, RotateCcw } from 'lucide-react';
@@ -35,7 +34,7 @@ export default function FilterDrawer({ filters, setFilters, onApply }: FilterDra
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button variant="outline" className="h-12 rounded-full border-zinc-800 bg-zinc-950 hover:bg-zinc-900 transition-all">
+        <Button variant="outline" className="h-14 rounded-2xl border-zinc-800 bg-zinc-950 hover:bg-zinc-900 transition-all px-6">
           <SlidersHorizontal className="mr-2 h-4 w-4" /> Filters
         </Button>
       </SheetTrigger>
@@ -45,7 +44,6 @@ export default function FilterDrawer({ filters, setFilters, onApply }: FilterDra
         </SheetHeader>
 
         <div className="py-8 space-y-8">
-          {/* Price Range Section */}
           <div className="space-y-4">
             <h4 className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Price Range</h4>
             <div className="flex items-center gap-3">
@@ -54,6 +52,7 @@ export default function FilterDrawer({ filters, setFilters, onApply }: FilterDra
                 <Input 
                   placeholder="Min" 
                   type="number"
+                  min="0" 
                   value={filters.minPrice}
                   onChange={(e) => setFilters({ ...filters, minPrice: e.target.value })}
                   className="bg-zinc-900 border-zinc-800 pl-7 h-11"
@@ -65,6 +64,7 @@ export default function FilterDrawer({ filters, setFilters, onApply }: FilterDra
                 <Input 
                   placeholder="Max" 
                   type="number"
+                  min="0"
                   value={filters.maxPrice}
                   onChange={(e) => setFilters({ ...filters, maxPrice: e.target.value })}
                   className="bg-zinc-900 border-zinc-800 pl-7 h-11"
@@ -73,7 +73,6 @@ export default function FilterDrawer({ filters, setFilters, onApply }: FilterDra
             </div>
           </div>
 
-          {/* Condition Section */}
           <div className="space-y-4">
             <h4 className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Item Condition</h4>
             <div className="flex flex-wrap gap-2">

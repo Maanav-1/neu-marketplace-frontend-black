@@ -2,13 +2,14 @@ import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import api from '@/api/client';
 import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button'; //
+import { Button } from '@/components/ui/button';
 import { Search, PackageSearch, Loader2, Plus } from 'lucide-react';
-import ListingCard from '@/components/ListingCard'; //
-import CategorySidebar from '@/components/CategorySidebar'; //
-import FilterDrawer from '@/components/FilterDrawer'; //
+import ListingCard from '@/components/ListingCard';
+import CategorySidebar from '@/components/CategorySidebar';
+import FilterDrawer from '@/components/FilterDrawer';
 
-import type { Listing, Category, Condition, PagedResponse } from '@/types'; //
+// Type-only imports for TS strictness
+import type { Listing, Category, Condition, PagedResponse } from '@/types';
 
 export default function Home() {
   const [listings, setListings] = useState<Listing[]>([]);
@@ -21,6 +22,7 @@ export default function Home() {
   const [page, setPage] = useState(0);
   const [isLastPage, setIsLastPage] = useState(false);
 
+  // Advanced Filter State
   const [filters, setFilters] = useState({
     minPrice: '',
     maxPrice: '',
@@ -33,26 +35,36 @@ export default function Home() {
       
       const params: any = { 
         search: search.trim(), 
-        page: pageNum, //
-        size: 12, // Reduced size for better pagination feel
+        page: pageNum, 
+        size: 12, 
         sort: 'newest'
       };
       
       if (category !== 'ALL') params.category = category;
-      if (filters.minPrice) params.minPrice = filters.minPrice;
-      if (filters.maxPrice) params.maxPrice = filters.maxPrice;
+
+      // Safety Gate: Do not send negative values or non-numeric strings to backend
+      const minVal = parseFloat(filters.minPrice);
+      if (!isNaN(minVal) && minVal >= 0) {
+        params.minPrice = filters.minPrice;
+      }
+
+      const maxVal = parseFloat(filters.maxPrice);
+      if (!isNaN(maxVal) && maxVal >= 0) {
+        params.maxPrice = filters.maxPrice;
+      }
+
       if (filters.condition !== 'ALL') params.condition = filters.condition;
 
       const { data } = await api.get<PagedResponse<Listing>>('/listings', { params });
       
-      // If it's a new search/category, replace. Otherwise, append.
+      // Append results for pagination or replace for new search
       if (isNewSearch) {
         setListings(data.content);
       } else {
         setListings(prev => [...prev, ...data.content]);
       }
       
-      setIsLastPage(data.last); //
+      setIsLastPage(data.last);
     } catch (err) {
       console.error("Failed to fetch listings:", err);
     } finally {
@@ -61,7 +73,7 @@ export default function Home() {
     }
   };
 
-  // Reset pagination when search or category changes
+  // Triggered on category, search, or filter changes
   useEffect(() => {
     setPage(0);
     const delayDebounceFn = setTimeout(() => {
@@ -79,27 +91,45 @@ export default function Home() {
 
   return (
     <div className="flex flex-col lg:flex-row gap-10">
+      {/* 1. Category Sidebar */}
       <CategorySidebar selectedCategory={category} onSelect={setCategory} />
 
+      {/* 2. Main Content Area */}
       <div className="flex-1 space-y-8">
-        <div className="flex flex-col sm:flex-row gap-3">
-          <div className="relative flex-1">
+        
+        {/* Search & Filter Header */}
+        <div className="flex flex-col md:flex-row gap-4 items-center">
+          <div className="relative flex-1 w-full">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-zinc-500" />
             <Input 
-              placeholder="Search textbooks, furniture..." 
-              className="h-14 pl-12 bg-zinc-950 border-zinc-800 rounded-2xl"
+              placeholder="Search textbooks, furniture, electronics..." 
+              className="h-14 pl-12 bg-zinc-950 border-zinc-800 rounded-2xl text-base focus:ring-blue-600 transition-all shadow-inner"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
-          <FilterDrawer filters={filters} setFilters={setFilters} onApply={() => fetchListings(0, true)} />
+          
+          <FilterDrawer 
+            filters={filters} 
+            setFilters={setFilters} 
+            onApply={() => fetchListings(0, true)} 
+          />
         </div>
 
+        {/* 3. Listings Section */}
         <div>
           <div className="flex justify-between items-end mb-8">
-            <h2 className="text-3xl font-black tracking-tighter">
-              {category === 'ALL' ? 'Latest Discoveries' : category.replace('_', ' ')}
-            </h2>
+            <div>
+              <h2 className="text-3xl font-black tracking-tighter">
+                {category === 'ALL' ? 'Latest Discoveries' : category.replace('_', ' ')}
+              </h2>
+              <p className="text-zinc-500 text-sm font-medium mt-1">
+                {search ? `Showing results for "${search}"` : 'Handpicked for the Northeastern community'}
+              </p>
+            </div>
+            <p className="hidden sm:block text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 bg-zinc-900 px-3 py-1 rounded-full border border-zinc-800">
+              {listings.length} Husky Listings
+            </p>
           </div>
 
           <AnimatePresence mode="popLayout">
@@ -121,7 +151,7 @@ export default function Home() {
                   ))}
                 </motion.div>
 
-                {/* Load More Button Section */}
+                {/* Load More Button */}
                 {!isLastPage && (
                   <div className="flex justify-center pt-4">
                     <Button 
@@ -142,10 +172,17 @@ export default function Home() {
                 )}
               </div>
             ) : (
-              <div className="flex flex-col items-center justify-center py-32 bg-zinc-950/50 rounded-[2.5rem] border border-dashed border-zinc-800">
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="flex flex-col items-center justify-center py-32 bg-zinc-950/50 rounded-[2.5rem] border border-dashed border-zinc-800"
+              >
                 <PackageSearch className="h-10 w-10 text-zinc-700 mb-6" />
-                <h3 className="text-xl font-bold">No items found</h3>
-              </div>
+                <h3 className="text-xl font-bold tracking-tight text-white">No items found</h3>
+                <p className="text-zinc-500 text-sm mt-2 max-w-xs text-center">
+                  Try adjusting your filters or searching for something else.
+                </p>
+              </motion.div>
             )}
           </AnimatePresence>
         </div>

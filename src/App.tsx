@@ -1,8 +1,12 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import React from 'react'; // Added React import
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { useAuthStore } from '@/store/authStore';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import VerificationBanner from '@/components/VerificationBanner';
 import { Toaster } from '@/components/ui/toaster';
+
+// Page Imports
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
@@ -14,56 +18,100 @@ import Chat from '@/pages/Chat';
 import Profile from '@/pages/Profile';
 import AdminDashboard from '@/pages/admin/AdminDashboard';
 import UserManagement from '@/pages/admin/UserManagement';
+import ReportManagement from '@/pages/admin/ReportManagement';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
+
+/**
+ * ProtectedRoute Component
+ * Prevents unauthorized access to specific routes.
+ */
+function ProtectedRoute({ 
+  children, 
+  adminOnly = false 
+}: { 
+  children: React.ReactNode; // Changed from JSX.Element to React.ReactNode
+  adminOnly?: boolean; 
+}) {
+  const { user } = useAuthStore();
+
+  // If not logged in, redirect to login
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  // If admin route requested but user is not an admin, redirect to home
+  if (adminOnly && user.role !== 'ADMIN') {
+    return <Navigate to="/" replace />;
+  }
+
+  return <>{children}</>; // Wrapped in a fragment for better compatibility
+}
 
 function App() {
   return (
     <Router>
-      {/* The 'flex-col' and 'min-h-screen' classes on the outer div, 
-        combined with 'flex-1' on the main tag, ensure the Footer stays 
-        at the bottom of the page even on short screens.
-      */}
       <div className="min-h-screen flex flex-col bg-background text-foreground selection:bg-blue-500/30">
-        
-        {/* Global Navigation Bar */}
+        {/* Global Navigation */}
         <Navbar />
         
-        {/* Global Verification Gate for Husky accounts */}
+        {/* Global Verification Gate */}
         <VerificationBanner />
         
         {/* Main Content Area */}
-        <main className="container mx-auto px-4 py-8 flex-1">
+        <main className="container mx-auto px-4 md:px-8 py-8 flex-1">
           <Routes>
-            {/* Discover & Public Discovery Routes */}
+            {/* Public Discovery Routes */}
             <Route path="/" element={<Home />} />
             <Route path="/listings/:slug" element={<ListingDetail />} />
             
-            {/* Authentication & Security Routes */}
+            {/* Auth & Security Routes */}
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             
-            {/* Authenticated Account & Messaging Routes */}
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/inbox" element={<Inbox />} />
-            <Route path="/chat/:conversationId" element={<Chat />} />
+            {/* Authenticated User Routes */}
+            <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+            <Route path="/inbox" element={<ProtectedRoute><Inbox /></ProtectedRoute>} />
+            <Route path="/chat/:conversationId" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
             
-            {/* Inventory Management Routes */}
-            <Route path="/create" element={<CreateListing />} />
-            <Route path="/edit/:slug" element={<EditListing />} />
+            {/* Inventory Management */}
+            <Route path="/create" element={<ProtectedRoute><CreateListing /></ProtectedRoute>} />
+            <Route path="/edit/:slug" element={<ProtectedRoute><EditListing /></ProtectedRoute>} />
             
-            {/* Admin Management Routes */}
-            <Route path="/admin" element={<AdminDashboard />} />
-            <Route path="/admin/users" element={<UserManagement />} />
+            {/* Admin Management Routes (Gated) */}
+            <Route 
+              path="/admin" 
+              element={
+                <ProtectedRoute adminOnly>
+                  <AdminDashboard />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/admin/users" 
+              element={
+                <ProtectedRoute adminOnly>
+                  <UserManagement />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/admin/reports" 
+              element={
+                <ProtectedRoute adminOnly>
+                  <ReportManagement />
+                </ProtectedRoute>
+              } 
+            />
           </Routes>
         </main>
         
-        {/* Global Footer with Credits and Disclaimer */}
+        {/* Global Footer */}
         <Footer />
         
-        {/* Global Toast Notification System */}
+        {/* Toast Notifications */}
         <Toaster />
       </div>
     </Router>

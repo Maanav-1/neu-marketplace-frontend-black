@@ -1,9 +1,18 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom'; // Added for navigation
 import api from '@/api/client';
 import type { DashboardStats } from '@/types/admin';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Users, Package, AlertTriangle, MessageSquare, TrendingUp } from 'lucide-react';
+import { 
+  Users, 
+  Package, 
+  AlertTriangle, 
+  MessageSquare, 
+  TrendingUp,
+  ArrowRight
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState<DashboardStats | null>(null);
@@ -29,7 +38,7 @@ export default function AdminDashboard() {
   const statCards = [
     { title: "Total Users", value: stats.totalUsers, sub: `+${stats.newUsersToday} today`, icon: Users, color: "text-blue-500" },
     { title: "Active Listings", value: stats.activeListings, sub: `Avg. $${stats.averageListingPrice.toFixed(2)}`, icon: Package, color: "text-emerald-500" },
-    { title: "Pending Reports", value: stats.pendingReports, sub: `${stats.totalReports} total`, icon: AlertTriangle, color: "text-orange-500" },
+    { title: "Pending Reports", value: stats.pendingReports, sub: `${stats.totalReports} total`, icon: AlertTriangle, color: "text-orange-500", link: "/admin/reports" },
     { title: "Conversations", value: stats.totalConversations, sub: `${stats.totalMessages} messages`, icon: MessageSquare, color: "text-purple-500" },
   ];
 
@@ -45,9 +54,10 @@ export default function AdminDashboard() {
         </div>
       </div>
 
+      {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {statCards.map((card, i) => (
-          <Card key={i} className="bg-zinc-950 border-zinc-800">
+          <Card key={i} className="bg-zinc-950 border-zinc-800 group relative overflow-hidden">
             <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
               <CardTitle className="text-sm font-medium text-zinc-400">{card.title}</CardTitle>
               <card.icon className={`h-4 w-4 ${card.color}`} />
@@ -55,12 +65,20 @@ export default function AdminDashboard() {
             <CardContent>
               <div className="text-2xl font-bold">{card.value}</div>
               <p className="text-xs text-zinc-500 mt-1">{card.sub}</p>
+              
+              {/* Optional Link for actionable stats like Reports */}
+              {card.link && (
+                <Link to={card.link} className="absolute inset-0 z-10">
+                  <span className="sr-only">View {card.title}</span>
+                </Link>
+              )}
             </CardContent>
           </Card>
         ))}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Category breakdown */}
         <Card className="bg-zinc-950 border-zinc-800">
           <CardHeader><CardTitle className="text-lg">Listings by Category</CardTitle></CardHeader>
           <CardContent className="space-y-4">
@@ -79,6 +97,23 @@ export default function AdminDashboard() {
                 </div>
               </div>
             ))}
+          </CardContent>
+        </Card>
+
+        {/* Quick Actions Card */}
+        <Card className="bg-zinc-950 border-zinc-800">
+          <CardHeader><CardTitle className="text-lg">Quick Access</CardTitle></CardHeader>
+          <CardContent className="grid grid-cols-1 gap-3">
+            <Link to="/admin/users">
+              <Button variant="outline" className="w-full justify-between border-zinc-800 hover:bg-zinc-900 h-12">
+                User Management <ArrowRight size={16} />
+              </Button>
+            </Link>
+            <Link to="/admin/reports">
+              <Button variant="outline" className="w-full justify-between border-zinc-800 hover:bg-zinc-900 h-12">
+                Moderation Queue <ArrowRight size={16} />
+              </Button>
+            </Link>
           </CardContent>
         </Card>
       </div>

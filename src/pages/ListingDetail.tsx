@@ -19,6 +19,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
+import ReportModal from '@/components/ReportModal'; // Integrated reporting component
 import type { Listing } from '@/types';
 
 export default function ListingDetail() {
@@ -32,6 +33,7 @@ export default function ListingDetail() {
   const [currentImage, setCurrentImage] = useState(0);
   const [isSaving, setIsSaving] = useState(false);
   const [isMessaging, setIsMessaging] = useState(false);
+  const [reportModalOpen, setReportModalOpen] = useState(false); // Modal state
 
   useEffect(() => {
     const fetchListing = async () => {
@@ -212,12 +214,23 @@ export default function ListingDetail() {
             <div className="flex items-center gap-2 text-xs uppercase tracking-widest font-medium">
               <Clock size={14} /> Posted {new Date(listing.createdAt).toLocaleDateString()}
             </div>
-            <div className="flex items-center gap-2 text-xs uppercase tracking-widest font-medium">
+            {/* Functional Report Button */}
+            <div 
+              onClick={() => setReportModalOpen(true)}
+              className="flex items-center gap-2 text-xs uppercase tracking-widest font-medium cursor-pointer hover:text-orange-500 transition-colors"
+            >
               <ShieldAlert size={14} /> Report Listing
             </div>
           </div>
         </div>
       </div>
+
+      {/* Reporting Modal Component */}
+      <ReportModal 
+        listingId={listing.id} 
+        isOpen={reportModalOpen} 
+        onClose={() => setReportModalOpen(false)} 
+      />
     </motion.div>
   );
 }
