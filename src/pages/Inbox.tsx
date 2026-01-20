@@ -74,7 +74,7 @@ export default function Inbox() {
                     )}
                   </div>
                   <p className="text-xs text-gray-500 truncate">
-                    {conv.listing.title}
+                    <span className="font-bold">RE: "{conv.listing.title}"</span>
                   </p>
                   <p className="text-xs text-gray-400 mt-0.5 truncate">
                     {conv.lastMessage || "No messages yet"}

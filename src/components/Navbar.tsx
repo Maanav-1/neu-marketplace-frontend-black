@@ -58,7 +58,7 @@ export default function Navbar() {
                   size="sm"
                   className="text-gray-600 hover:text-black hover:bg-gray-100 h-8 px-3 text-sm font-medium"
                 >
-                  <Package className="mr-1.5 h-4 w-4" /> Listings
+                  <Package className="mr-1.5 h-4 w-4" /> My Listings
                 </Button>
               </Link>
 
