@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Mail, Lock, Loader2, ArrowRight } from 'lucide-react';
 import api from '@/api/client';
@@ -17,6 +17,28 @@ export default function Login() {
   const { setAuth } = useAuthStore();
   const { toast } = useToast();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  // Check for OAuth error redirect (e.g., blocked user)
+  useEffect(() => {
+    const error = searchParams.get('error');
+    if (error) {
+      let message = 'Authentication failed. Please try again.';
+
+      // Common error messages
+      if (error.toLowerCase().includes('blocked')) {
+        message = 'Your account has been blocked. Please contact support.';
+      } else if (error.toLowerCase().includes('disabled')) {
+        message = 'Your account has been disabled.';
+      }
+
+      toast({
+        variant: 'destructive',
+        title: 'Access Denied',
+        description: message
+      });
+    }
+  }, [searchParams, toast]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,7 +64,8 @@ export default function Login() {
   };
 
   const handleGoogleLogin = () => {
-    window.location.href = '/api/oauth2/authorization/google';
+    // Point directly to the backend port and the standard Spring Security path
+    window.location.href = 'http://localhost:8080/oauth2/authorization/google';
   };
 
   return (

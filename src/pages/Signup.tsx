@@ -78,7 +78,8 @@ export default function Signup() {
   };
 
   const handleGoogleSignup = () => {
-    window.location.href = '/api/oauth2/authorization/google';
+    // Point directly to the backend port and the standard Spring Security path
+    window.location.href = 'http://localhost:8080/oauth2/authorization/google';
   };
 
   return (

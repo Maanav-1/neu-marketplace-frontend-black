@@ -7,7 +7,7 @@ import { useAuthStore } from '@/store/authStore';
 export default function OAuthCallback() {
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
-    const { setAuth } = useAuthStore();
+    const { setAuth, setIsOAuthUser } = useAuthStore();
     const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
     const [errorMessage, setErrorMessage] = useState('');
 
@@ -37,6 +37,7 @@ export default function OAuthCallback() {
 
                 // Set auth state with user and token
                 setAuth(user, token);
+                setIsOAuthUser(true);
 
                 setStatus('success');
 

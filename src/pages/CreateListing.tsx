@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Upload, X, Loader2, Plus, ImagePlus } from 'lucide-react';
+import { X, Loader2, ImagePlus } from 'lucide-react';
 import api from '@/api/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -128,7 +128,10 @@ export default function CreateListing() {
                   placeholder="0.00"
                   className="bg-slate-50 border-slate-200 h-11 focus:ring-indigo-500 focus:border-indigo-500"
                   value={formData.price}
-                  onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) })}
+                  onChange={(e) => {
+                    const parsed = parseFloat(e.target.value);
+                    setFormData({ ...formData, price: isNaN(parsed) ? 0 : parsed });
+                  }}
                   required
                 />
               </div>

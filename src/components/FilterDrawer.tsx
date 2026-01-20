@@ -1,10 +1,10 @@
-import React from 'react';
-import { 
-  Sheet, 
-  SheetContent, 
-  SheetHeader, 
-  SheetTitle, 
-  SheetTrigger, 
+
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
   SheetFooter
 } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
@@ -49,10 +49,10 @@ export default function FilterDrawer({ filters, setFilters, onApply }: FilterDra
             <div className="flex items-center gap-3">
               <div className="relative flex-1">
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-600 text-sm">$</span>
-                <Input 
-                  placeholder="Min" 
+                <Input
+                  placeholder="Min"
                   type="number"
-                  min="0" 
+                  min="0"
                   value={filters.minPrice}
                   onChange={(e) => setFilters({ ...filters, minPrice: e.target.value })}
                   className="bg-zinc-900 border-zinc-800 pl-7 h-11"
@@ -61,8 +61,8 @@ export default function FilterDrawer({ filters, setFilters, onApply }: FilterDra
               <div className="w-2 h-[1px] bg-zinc-800" />
               <div className="relative flex-1">
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-600 text-sm">$</span>
-                <Input 
-                  placeholder="Max" 
+                <Input
+                  placeholder="Max"
                   type="number"
                   min="0"
                   value={filters.maxPrice}
@@ -80,11 +80,10 @@ export default function FilterDrawer({ filters, setFilters, onApply }: FilterDra
                 <button
                   key={c}
                   onClick={() => setFilters({ ...filters, condition: c })}
-                  className={`px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest transition-all border ${
-                    filters.condition === c 
-                    ? 'bg-blue-600 border-blue-500 text-white shadow-lg shadow-blue-500/20' 
-                    : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:border-zinc-700'
-                  }`}
+                  className={`px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest transition-all border ${filters.condition === c
+                      ? 'bg-blue-600 border-blue-500 text-white shadow-lg shadow-blue-500/20'
+                      : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:border-zinc-700'
+                    }`}
                 >
                   {c.replace('_', ' ')}
                 </button>

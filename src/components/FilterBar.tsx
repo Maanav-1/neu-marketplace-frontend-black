@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { SlidersHorizontal, X, ChevronDown, ChevronUp } from 'lucide-react';
@@ -45,8 +45,8 @@ export default function FilterBar({ filters, setFilters }: FilterBarProps) {
                             key={c.value}
                             onClick={() => setFilters({ ...filters, condition: c.value })}
                             className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all border ${filters.condition === c.value
-                                    ? 'bg-indigo-600 border-indigo-600 text-white shadow-sm'
-                                    : 'bg-white border-slate-200 text-slate-600 hover:border-indigo-300 hover:text-indigo-600'
+                                ? 'bg-indigo-600 border-indigo-600 text-white shadow-sm'
+                                : 'bg-white border-slate-200 text-slate-600 hover:border-indigo-300 hover:text-indigo-600'
                                 }`}
                         >
                             {c.label}

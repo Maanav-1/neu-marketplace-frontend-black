@@ -16,6 +16,8 @@ import ListingDetail from '@/pages/ListingDetail';
 import Inbox from '@/pages/Inbox';
 import Chat from '@/pages/Chat';
 import Profile from '@/pages/Profile';
+import MyListings from '@/pages/MyListings';
+import SavedListings from '@/pages/SavedListings';
 import AdminDashboard from '@/pages/admin/AdminDashboard';
 import UserManagement from '@/pages/admin/UserManagement';
 import ReportManagement from '@/pages/admin/ReportManagement';
@@ -23,10 +25,6 @@ import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import OAuthCallback from './pages/OAuthCallback';
 
-/**
- * ProtectedRoute Component
- * Prevents unauthorized access to specific routes.
- */
 function ProtectedRoute({
   children,
   adminOnly = false
@@ -35,83 +33,39 @@ function ProtectedRoute({
   adminOnly?: boolean;
 }) {
   const { user } = useAuthStore();
-
-  if (!user) {
-    return <Navigate to="/login" replace />;
-  }
-
-  if (adminOnly && user.role !== 'ADMIN') {
-    return <Navigate to="/" replace />;
-  }
-
+  if (!user) return <Navigate to="/login" replace />;
+  if (adminOnly && user.role !== 'ADMIN') return <Navigate to="/" replace />;
   return <>{children}</>;
 }
 
 function App() {
   return (
     <Router>
-      <div className="min-h-screen flex flex-col bg-white text-slate-900">
-        {/* Global Navigation */}
+      <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900">
         <Navbar />
-
-        {/* Global Verification Gate */}
         <VerificationBanner />
-
-        {/* Main Content Area */}
-        <main className="container mx-auto px-4 md:px-8 py-8 flex-1">
+        <main className="flex-1 px-4 lg:px-8 py-6">
           <Routes>
-            {/* Public Discovery Routes */}
             <Route path="/" element={<Home />} />
             <Route path="/listings/:slug" element={<ListingDetail />} />
-
-            {/* Auth & Security Routes */}
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/oauth/callback" element={<OAuthCallback />} />
-
-            {/* Authenticated User Routes */}
             <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+            <Route path="/my-listings" element={<ProtectedRoute><MyListings /></ProtectedRoute>} />
+            <Route path="/saved" element={<ProtectedRoute><SavedListings /></ProtectedRoute>} />
             <Route path="/inbox" element={<ProtectedRoute><Inbox /></ProtectedRoute>} />
             <Route path="/chat/:conversationId" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
-
-            {/* Inventory Management */}
             <Route path="/create" element={<ProtectedRoute><CreateListing /></ProtectedRoute>} />
-            <Route path="/edit/:slug" element={<ProtectedRoute><EditListing /></ProtectedRoute>} />
-
-            {/* Admin Management Routes (Gated) */}
-            <Route
-              path="/admin"
-              element={
-                <ProtectedRoute adminOnly>
-                  <AdminDashboard />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin/users"
-              element={
-                <ProtectedRoute adminOnly>
-                  <UserManagement />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin/reports"
-              element={
-                <ProtectedRoute adminOnly>
-                  <ReportManagement />
-                </ProtectedRoute>
-              }
-            />
+            <Route path="/listings/:slug/edit" element={<ProtectedRoute><EditListing /></ProtectedRoute>} />
+            <Route path="/admin" element={<ProtectedRoute adminOnly><AdminDashboard /></ProtectedRoute>} />
+            <Route path="/admin/users" element={<ProtectedRoute adminOnly><UserManagement /></ProtectedRoute>} />
+            <Route path="/admin/reports" element={<ProtectedRoute adminOnly><ReportManagement /></ProtectedRoute>} />
           </Routes>
         </main>
-
-        {/* Global Footer */}
         <Footer />
-
-        {/* Toast Notifications */}
         <Toaster />
       </div>
     </Router>

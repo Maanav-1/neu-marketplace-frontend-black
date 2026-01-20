@@ -8,7 +8,7 @@ export interface User {
   name: string;
   profilePicUrl?: string;
   emailVerified: boolean; // Added to fix User error
-  role: 'USER' | 'ADMIN'; 
+  role: 'USER' | 'ADMIN';
 }
 export interface SavedItem {
   id: number;
@@ -40,6 +40,7 @@ export interface Listing {
   condition: Condition;
   conditionDisplayName: string;
   status: ListingStatus;
+  thumbnailUrl?: string;
   images: ListingImage[];
   seller: Seller; // Uses the full Seller interface above
   createdAt: string; // Added to fix Listing error
