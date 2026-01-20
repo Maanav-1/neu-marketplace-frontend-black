@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion';
 import {
     Book,
     Monitor,
@@ -8,7 +7,6 @@ import {
     ChefHat,
     Gift,
     Layers,
-    ChevronRight
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { Category } from '@/types';
@@ -32,60 +30,50 @@ interface CategorySidebarProps {
 
 export default function CategorySidebar({ selectedCategory, onSelect }: CategorySidebarProps) {
     return (
-        <div className="w-60 hidden lg:block shrink-0 space-y-6">
-            <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm">
-                <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-4 px-2">
+        <div className="flex flex-col h-full">
+            {/* Categories */}
+            <div className="flex-1 space-y-1">
+                <h3 className="text-xs font-medium uppercase tracking-wider text-gray-400 mb-3 px-2">
                     Categories
                 </h3>
-                <div className="space-y-1">
-                    {CATEGORIES.map((cat) => {
-                        const isActive = selectedCategory === cat.value;
-                        return (
-                            <motion.button
-                                key={cat.value}
-                                onClick={() => onSelect(cat.value)}
-                                whileHover={{ x: 4 }}
+                {CATEGORIES.map((cat) => {
+                    const isActive = selectedCategory === cat.value;
+                    return (
+                        <button
+                            key={cat.value}
+                            onClick={() => onSelect(cat.value)}
+                            className={cn(
+                                "w-full flex items-center gap-2.5 px-2 py-1.5 rounded text-sm transition-colors",
+                                isActive
+                                    ? "text-black font-medium"
+                                    : "text-gray-600 hover:text-black"
+                            )}
+                        >
+                            <cat.icon
+                                size={16}
                                 className={cn(
-                                    "w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium transition-all group",
-                                    isActive
-                                        ? "bg-indigo-50 text-indigo-700 border border-indigo-200"
-                                        : "text-slate-600 hover:text-slate-900 hover:bg-slate-50 border border-transparent"
+                                    isActive ? "text-black" : "text-gray-400"
                                 )}
-                            >
-                                <div className="flex items-center gap-3">
-                                    <cat.icon
-                                        size={18}
-                                        className={cn(
-                                            isActive
-                                                ? "text-indigo-600"
-                                                : "text-slate-400 group-hover:text-slate-600"
-                                        )}
-                                    />
-                                    {cat.label}
-                                </div>
-                                <ChevronRight
-                                    size={14}
-                                    className={cn(
-                                        "opacity-0 transition-opacity text-indigo-500",
-                                        isActive && "opacity-100"
-                                    )}
-                                />
-                            </motion.button>
-                        );
-                    })}
-                </div>
+                            />
+                            {cat.label}
+                            {isActive && (
+                                <div className="ml-auto w-1.5 h-1.5 rounded-full bg-black" />
+                            )}
+                        </button>
+                    );
+                })}
             </div>
 
-            {/* Notice Card */}
-            <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-sm">
-                <p className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
-                    Notice
-                </p>
-                <p className="text-xs text-slate-500 leading-relaxed">
-                    neu-Marketplace is an independent student project.{' '}
-                    <span className="text-slate-700 font-medium">Not affiliated</span>{' '}
-                    with Northeastern University.
-                </p>
+            {/* Notice Card - at bottom */}
+            <div className="mt-auto pt-4">
+                <div className="p-3 rounded-lg bg-gray-50 border border-gray-200">
+                    <p className="text-xs font-medium text-gray-600 mb-1">Notice</p>
+                    <p className="text-xs text-gray-500 leading-relaxed">
+                        An independent student project.{' '}
+                        <span className="text-gray-700">Not affiliated</span>{' '}
+                        with Northeastern University.
+                    </p>
+                </div>
             </div>
         </div>
     );

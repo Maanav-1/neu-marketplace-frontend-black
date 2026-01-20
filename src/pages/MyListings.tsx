@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Package, Loader2, RefreshCw, CheckCircle2 } from 'lucide-react';
+import { Package, Loader2, RefreshCw, CheckCircle2, Plus } from 'lucide-react';
 import api from '@/api/client';
 import { useAuthStore } from '@/store/authStore';
 import { useToast } from '@/hooks/use-toast';
@@ -49,10 +49,10 @@ export default function MyListings() {
         setMarkingSoldId(listingId);
         try {
             await api.patch(`/listings/${listingId}/sold`);
-            toast({ title: "Congratulations!", description: "Item marked as sold." });
+            toast({ title: "Done", description: "Item marked as sold." });
             fetchListings();
         } catch (err) {
-            toast({ variant: "destructive", title: "Error", description: "Could not update status." });
+            toast({ variant: "destructive", title: "Error", description: "Could not update." });
         } finally {
             setMarkingSoldId(null);
         }
@@ -62,10 +62,10 @@ export default function MyListings() {
         setBumpingId(listingId);
         try {
             await api.patch(`/listings/${listingId}/bump`);
-            toast({ title: "Listing Renewed!", description: "Your item is now active for another 30 days." });
+            toast({ title: "Renewed", description: "Listing active for 30 more days." });
             fetchListings();
         } catch (err) {
-            toast({ variant: "destructive", title: "Bump failed", description: "Could not renew listing." });
+            toast({ variant: "destructive", title: "Error", description: "Could not renew." });
         } finally {
             setBumpingId(null);
         }
@@ -74,66 +74,62 @@ export default function MyListings() {
     if (!user) return null;
 
     return (
-        <div className="max-w-6xl mx-auto py-6 px-4">
+        <div className="max-w-5xl mx-auto py-8">
             <div className="flex items-center justify-between mb-8">
                 <div>
-                    <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Your Listings</h1>
-                    <p className="text-slate-500 mt-1">Manage your items on the marketplace</p>
+                    <h1 className="text-2xl font-semibold text-black">Your Listings</h1>
+                    <p className="text-gray-500 text-sm mt-0.5">{myListings.length} items</p>
                 </div>
                 <Link to="/create">
-                    <Button className="bg-indigo-600 hover:bg-indigo-700">
-                        <Package className="mr-2 h-4 w-4" /> New Listing
+                    <Button className="bg-black hover:bg-gray-800 text-white h-9 text-sm">
+                        <Plus className="mr-1.5 h-4 w-4" /> New Listing
                     </Button>
                 </Link>
             </div>
 
             {loading ? (
                 <div className="flex justify-center py-20">
-                    <Loader2 className="animate-spin text-indigo-600 h-8 w-8" />
+                    <Loader2 className="animate-spin text-gray-400 h-6 w-6" />
                 </div>
             ) : myListings.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                     {myListings.map(item => (
-                        <div key={item.id} className="group relative space-y-3">
+                        <div key={item.id} className="group space-y-2">
                             <ListingCard item={item} />
 
                             {/* Action Buttons */}
-                            <div className="flex gap-2">
-                                <Button
-                                    variant="outline"
-                                    size="sm"
+                            <div className="flex gap-1.5">
+                                <button
                                     disabled={bumpingId === item.id || item.status === 'SOLD'}
-                                    className="flex-1 rounded-lg border-slate-200 text-xs font-medium hover:bg-indigo-50 hover:text-indigo-600 hover:border-indigo-200 h-9"
+                                    className="flex-1 h-7 text-xs font-medium border border-gray-200 rounded bg-white hover:bg-gray-50 disabled:opacity-50 flex items-center justify-center gap-1 transition-colors"
                                     onClick={() => handleBump(item.id)}
                                 >
-                                    {bumpingId === item.id ? <Loader2 className="animate-spin h-3 w-3" /> : <><RefreshCw size={12} className="mr-1" /> Renew</>}
-                                </Button>
+                                    {bumpingId === item.id ? <Loader2 className="animate-spin h-3 w-3" /> : <><RefreshCw size={10} /> Renew</>}
+                                </button>
 
                                 <AlertDialog>
                                     <AlertDialogTrigger asChild>
-                                        <Button
-                                            variant="outline"
-                                            size="sm"
+                                        <button
                                             disabled={markingSoldId === item.id || item.status === 'SOLD'}
-                                            className="flex-1 rounded-lg border-slate-200 text-xs font-medium hover:bg-emerald-50 hover:text-emerald-600 hover:border-emerald-200 h-9"
+                                            className="flex-1 h-7 text-xs font-medium border border-gray-200 rounded bg-white hover:bg-gray-50 disabled:opacity-50 flex items-center justify-center gap-1 transition-colors"
                                         >
-                                            {item.status === 'SOLD' ? <CheckCircle2 size={12} /> : "Sold?"}
-                                        </Button>
+                                            {item.status === 'SOLD' ? <CheckCircle2 size={10} /> : "Sold?"}
+                                        </button>
                                     </AlertDialogTrigger>
-                                    <AlertDialogContent className="bg-white border-slate-200">
+                                    <AlertDialogContent className="bg-white border-gray-200">
                                         <AlertDialogHeader>
-                                            <AlertDialogTitle className="text-slate-900 font-semibold">Mark as Sold?</AlertDialogTitle>
-                                            <AlertDialogDescription className="text-slate-500">
-                                                This will hide the item from the main feed but keep it on your profile for history.
+                                            <AlertDialogTitle>Mark as Sold?</AlertDialogTitle>
+                                            <AlertDialogDescription className="text-gray-500">
+                                                This will hide it from search but keep it in your history.
                                             </AlertDialogDescription>
                                         </AlertDialogHeader>
                                         <AlertDialogFooter>
-                                            <AlertDialogCancel className="border-slate-200">Cancel</AlertDialogCancel>
+                                            <AlertDialogCancel className="border-gray-200">Cancel</AlertDialogCancel>
                                             <AlertDialogAction
                                                 onClick={() => handleMarkAsSold(item.id)}
-                                                className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold"
+                                                className="bg-black hover:bg-gray-800 text-white"
                                             >
-                                                Confirm Sold
+                                                Confirm
                                             </AlertDialogAction>
                                         </AlertDialogFooter>
                                     </AlertDialogContent>
@@ -143,12 +139,12 @@ export default function MyListings() {
                     ))}
                 </div>
             ) : (
-                <div className="text-center py-20 border-2 border-dashed border-slate-200 rounded-2xl bg-slate-50">
-                    <Package className="h-12 w-12 text-slate-300 mx-auto mb-4" />
-                    <p className="text-slate-500 font-medium text-lg">Your inventory is empty</p>
-                    <p className="text-slate-400 text-sm mt-1">Start selling by creating your first listing</p>
+                <div className="text-center py-16 border border-dashed border-gray-200 rounded-lg">
+                    <Package className="h-10 w-10 text-gray-300 mx-auto mb-3" />
+                    <p className="text-gray-600 font-medium">No listings yet</p>
+                    <p className="text-gray-400 text-sm mt-1">Create your first listing to start selling</p>
                     <Link to="/create">
-                        <Button className="mt-6 bg-indigo-600 hover:bg-indigo-700">Create Listing</Button>
+                        <Button className="mt-4 bg-black hover:bg-gray-800 text-white h-9 text-sm">Create Listing</Button>
                     </Link>
                 </div>
             )}

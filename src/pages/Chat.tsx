@@ -65,38 +65,36 @@ export default function Chat() {
     }
   };
 
-  // Calculate height to fill remaining viewport
-  // Navbar ~64px, main padding ~48px (py-6 = 24px * 2)
   return (
-    <div className="h-[calc(100vh-160px)] flex flex-col max-w-4xl mx-auto bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-      {/* Chat Header - Fixed */}
-      <div className="px-5 py-4 border-b border-slate-200 flex items-center gap-4 bg-slate-50 shrink-0">
+    <div className="h-[calc(100vh-120px)] flex flex-col max-w-2xl mx-auto bg-white border border-gray-200 rounded-lg overflow-hidden">
+      {/* Chat Header */}
+      <div className="px-4 py-3 border-b border-gray-200 flex items-center gap-3 shrink-0">
         <Link to="/inbox">
-          <Button variant="ghost" size="icon" className="text-slate-500 hover:text-slate-900 h-9 w-9">
-            <ArrowLeft size={20} />
+          <Button variant="ghost" size="icon" className="text-gray-500 hover:text-black h-8 w-8">
+            <ArrowLeft size={18} />
           </Button>
         </Link>
         <div className="flex-1 min-w-0">
-          <h2 className="font-semibold text-slate-900 truncate">
+          <h2 className="font-medium text-black text-sm truncate">
             {conversation?.otherParticipant.name}
           </h2>
-          <p className="text-sm text-slate-500 truncate">
-            Re: {conversation?.listing.title}
+          <p className="text-xs text-gray-500 truncate">
+            {conversation?.listing.title}
           </p>
         </div>
       </div>
 
-      {/* Messages Area - Scrollable */}
-      <div className="flex-1 overflow-y-auto px-5 py-4">
-        <div className="space-y-3">
+      {/* Messages Area */}
+      <div className="flex-1 overflow-y-auto px-4 py-4">
+        <div className="space-y-2">
           {messages.length === 0 && (
-            <p className="text-center text-slate-400 py-10">No messages yet. Start the conversation!</p>
+            <p className="text-center text-gray-400 text-sm py-10">No messages yet. Start the conversation!</p>
           )}
           {messages.map((msg) => (
             <div key={msg.id} className={`flex ${msg.isOwnMessage ? 'justify-end' : 'justify-start'}`}>
-              <div className={`max-w-[70%] px-4 py-3 rounded-2xl text-sm leading-relaxed ${msg.isOwnMessage
-                ? 'bg-indigo-600 text-white rounded-br-md'
-                : 'bg-slate-100 text-slate-700 rounded-bl-md'
+              <div className={`max-w-[75%] px-3 py-2 rounded-lg text-sm ${msg.isOwnMessage
+                  ? 'bg-black text-white'
+                  : 'bg-gray-100 text-gray-800'
                 }`}>
                 {msg.content}
               </div>
@@ -106,20 +104,21 @@ export default function Chat() {
         </div>
       </div>
 
-      {/* Message Input - Fixed */}
-      <form onSubmit={handleSend} className="px-5 py-4 bg-slate-50 border-t border-slate-200 shrink-0 flex gap-3">
+      {/* Message Input */}
+      <form onSubmit={handleSend} className="px-4 py-3 border-t border-gray-200 shrink-0 flex gap-2">
         <Input
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
-          placeholder="Type your message..."
-          className="flex-1 h-11 bg-white border-slate-200 rounded-xl"
+          placeholder="Type a message..."
+          className="flex-1 h-9 bg-white border-gray-200 focus:border-gray-400 focus:ring-0 text-sm"
         />
         <Button
           type="submit"
           disabled={sending || !newMessage.trim()}
-          className="bg-indigo-600 hover:bg-indigo-700 h-11 px-5 rounded-xl"
+          className="bg-black hover:bg-gray-800 h-9 w-9"
+          size="icon"
         >
-          {sending ? <Loader2 className="animate-spin" size={18} /> : <Send size={18} />}
+          {sending ? <Loader2 className="animate-spin" size={16} /> : <Send size={16} />}
         </Button>
       </form>
     </div>

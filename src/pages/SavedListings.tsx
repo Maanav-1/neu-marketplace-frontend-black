@@ -30,25 +30,25 @@ export default function SavedListings() {
     if (!user) return null;
 
     return (
-        <div className="max-w-6xl mx-auto py-6 px-4">
+        <div className="max-w-5xl mx-auto py-8">
             <div className="mb-8">
-                <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Saved Items</h1>
-                <p className="text-slate-500 mt-1">Items you've saved for later</p>
+                <h1 className="text-2xl font-semibold text-black">Saved Items</h1>
+                <p className="text-gray-500 text-sm mt-0.5">{savedItems.length} items</p>
             </div>
 
             {loading ? (
                 <div className="flex justify-center py-20">
-                    <Loader2 className="animate-spin text-indigo-600 h-8 w-8" />
+                    <Loader2 className="animate-spin text-gray-400 h-6 w-6" />
                 </div>
             ) : savedItems.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                     {savedItems.map(save => <ListingCard key={save.id} item={save.listing} />)}
                 </div>
             ) : (
-                <div className="text-center py-20 border-2 border-dashed border-slate-200 rounded-2xl bg-slate-50">
-                    <Heart className="h-12 w-12 text-slate-300 mx-auto mb-4" />
-                    <p className="text-slate-500 font-medium text-lg">No saved items yet</p>
-                    <p className="text-slate-400 text-sm mt-1">Browse listings and save items you're interested in</p>
+                <div className="text-center py-16 border border-dashed border-gray-200 rounded-lg">
+                    <Heart className="h-10 w-10 text-gray-300 mx-auto mb-3" />
+                    <p className="text-gray-600 font-medium">No saved items</p>
+                    <p className="text-gray-400 text-sm mt-1">Browse listings and save items you're interested in</p>
                 </div>
             )}
         </div>

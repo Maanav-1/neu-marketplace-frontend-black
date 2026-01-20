@@ -1,13 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import { Loader2, Save, Trash2, CheckCircle, ArrowLeft } from 'lucide-react';
 import api from '@/api/client';
 import { useAuthStore } from '@/store/authStore';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -23,8 +28,24 @@ import {
 import type { Category, Condition, ListingRequest } from '@/types/listing';
 import type { Listing } from '@/types';
 
-const CATEGORIES: Category[] = ['FURNITURE', 'ELECTRONICS', 'TEXTBOOKS', 'CLOTHING', 'BIKES', 'KITCHEN', 'FREE_STUFF', 'OTHER'];
-const CONDITIONS: Condition[] = ['NEW', 'LIKE_NEW', 'GOOD', 'FAIR', 'POOR'];
+const CATEGORIES: { value: Category; label: string }[] = [
+  { value: 'FURNITURE', label: 'Furniture' },
+  { value: 'ELECTRONICS', label: 'Electronics' },
+  { value: 'TEXTBOOKS', label: 'Textbooks' },
+  { value: 'CLOTHING', label: 'Clothing' },
+  { value: 'BIKES', label: 'Bikes & Scooters' },
+  { value: 'KITCHEN', label: 'Kitchen' },
+  { value: 'FREE_STUFF', label: 'Free Stuff' },
+  { value: 'OTHER', label: 'Other' },
+];
+
+const CONDITIONS: { value: Condition; label: string }[] = [
+  { value: 'NEW', label: 'New' },
+  { value: 'LIKE_NEW', label: 'Like New' },
+  { value: 'GOOD', label: 'Good' },
+  { value: 'FAIR', label: 'Fair' },
+  { value: 'POOR', label: 'Poor' },
+];
 
 export default function EditListing() {
   const { slug } = useParams<{ slug: string }>();
@@ -60,8 +81,8 @@ export default function EditListing() {
           condition: data.condition,
         });
       } catch (err) {
-        toast({ variant: "destructive", title: "Error", description: "Failed to load listing." });
-        navigate('/profile');
+        toast({ variant: "destructive", title: "Error", description: "Failed to load." });
+        navigate('/my-listings');
       } finally {
         setLoading(false);
       }
@@ -74,10 +95,10 @@ export default function EditListing() {
     setSaving(true);
     try {
       await api.put(`/listings/${listingId}`, formData);
-      toast({ title: "Updated", description: "Changes saved successfully." });
+      toast({ title: "Saved", description: "Changes applied." });
       navigate(`/listings/${slug}`);
     } catch (err) {
-      toast({ variant: "destructive", title: "Update failed" });
+      toast({ variant: "destructive", title: "Failed to save" });
     } finally {
       setSaving(false);
     }
@@ -86,96 +107,137 @@ export default function EditListing() {
   const handleDelete = async () => {
     try {
       await api.delete(`/listings/${listingId}`);
-      toast({ title: "Deleted", description: "Listing has been removed." });
-      navigate('/profile'); // Redirect back to profile
+      toast({ title: "Deleted" });
+      navigate('/my-listings');
     } catch (err) {
-      toast({ variant: "destructive", title: "Error", description: "Could not delete." });
+      toast({ variant: "destructive", title: "Error" });
     }
   };
 
   const handleMarkAsSold = async () => {
     try {
       await api.patch(`/listings/${listingId}/sold`);
-      toast({ title: "Sold!", description: "Item marked as sold." });
-      navigate('/profile');
+      toast({ title: "Marked as sold" });
+      navigate('/my-listings');
     } catch (err) {
       toast({ variant: "destructive", title: "Error" });
     }
   };
 
-  if (loading) return <div className="flex justify-center py-20"><Loader2 className="animate-spin text-indigo-600" /></div>;
+  if (loading) return <div className="flex justify-center py-20"><Loader2 className="animate-spin text-gray-400" /></div>;
 
   return (
-    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="container max-w-3xl py-10">
-      <Button variant="ghost" className="mb-6 text-slate-500" onClick={() => navigate(-1)}>
-        <ArrowLeft size={16} className="mr-2" /> Back
-      </Button>
-      <h1 className="text-3xl font-bold mb-8">Edit Listing</h1>
-      <form onSubmit={handleUpdate} className="space-y-8">
-        <Card>
-          <CardContent className="pt-6 space-y-6">
-            <div className="space-y-2">
-              <label className="text-xs font-bold uppercase text-slate-500">Title</label>
-              <Input value={formData.title} onChange={e => setFormData({ ...formData, title: e.target.value })} required />
+    <div className="max-w-2xl mx-auto py-8">
+      <button onClick={() => navigate(-1)} className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-black mb-6 transition-colors">
+        <ArrowLeft size={14} /> Back
+      </button>
+
+      <h1 className="text-2xl font-semibold text-black mb-8">Edit Listing</h1>
+
+      <form onSubmit={handleUpdate} className="space-y-6">
+        <div className="space-y-1.5">
+          <label className="text-sm font-medium text-gray-700">Title</label>
+          <Input
+            value={formData.title}
+            onChange={e => setFormData({ ...formData, title: e.target.value })}
+            className="bg-white border-gray-200 h-10 focus:border-gray-400 focus:ring-0"
+            required
+          />
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-1.5">
+            <label className="text-sm font-medium text-gray-700">Price</label>
+            <div className="relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">$</span>
+              <Input
+                type="number"
+                value={formData.price}
+                onChange={e => setFormData({ ...formData, price: parseFloat(e.target.value) || 0 })}
+                className="bg-white border-gray-200 h-10 pl-7 focus:border-gray-400 focus:ring-0"
+                required
+              />
             </div>
-            <div className="grid grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <label className="text-xs font-bold uppercase text-slate-500">Price ($)</label>
-                <Input type="number" value={formData.price} onChange={e => setFormData({ ...formData, price: parseFloat(e.target.value) || 0 })} required />
-              </div>
-              <div className="space-y-2">
-                <label className="text-xs font-bold uppercase text-slate-500">Condition</label>
-                <select value={formData.condition} onChange={e => setFormData({ ...formData, condition: e.target.value as Condition })} className="w-full h-10 border rounded-md px-3">
-                  {CONDITIONS.map(c => <option key={c} value={c}>{c.replace('_', ' ')}</option>)}
-                </select>
-              </div>
-            </div>
-            <div className="space-y-2">
-              <label className="text-xs font-bold uppercase text-slate-500">Category</label>
-              <select value={formData.category} onChange={e => setFormData({ ...formData, category: e.target.value as Category })} className="w-full h-10 border rounded-md px-3">
-                {CATEGORIES.map(c => <option key={c} value={c}>{c.replace('_', ' ')}</option>)}
-              </select>
-            </div>
-            <div className="space-y-2">
-              <label className="text-xs font-bold uppercase text-slate-500">Description</label>
-              <textarea value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} className="w-full min-h-[150px] p-3 border rounded-md" />
-            </div>
-          </CardContent>
-          <CardFooter className="border-t pt-6">
-            <Button type="submit" disabled={saving} className="w-full bg-indigo-600 text-white">
-              {saving ? <Loader2 className="animate-spin" /> : <><Save size={18} className="mr-2" /> Save Changes</>}
-            </Button>
-          </CardFooter>
-        </Card>
+          </div>
+          <div className="space-y-1.5">
+            <label className="text-sm font-medium text-gray-700">Condition</label>
+            <Select
+              value={formData.condition}
+              onValueChange={(value) => setFormData({ ...formData, condition: value as Condition })}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select condition" />
+              </SelectTrigger>
+              <SelectContent>
+                {CONDITIONS.map(cond => (
+                  <SelectItem key={cond.value} value={cond.value}>{cond.label}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
+        <div className="space-y-1.5">
+          <label className="text-sm font-medium text-gray-700">Category</label>
+          <Select
+            value={formData.category}
+            onValueChange={(value) => setFormData({ ...formData, category: value as Category })}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select category" />
+            </SelectTrigger>
+            <SelectContent>
+              {CATEGORIES.map(cat => (
+                <SelectItem key={cat.value} value={cat.value}>{cat.label}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="space-y-1.5">
+          <label className="text-sm font-medium text-gray-700">Description</label>
+          <textarea
+            value={formData.description}
+            onChange={e => setFormData({ ...formData, description: e.target.value })}
+            className="w-full min-h-[120px] p-3 rounded-lg bg-white border border-gray-200 text-sm focus:border-gray-400 focus:ring-0 focus:outline-none resize-none"
+          />
+        </div>
+
+        <Button type="submit" disabled={saving} className="w-full bg-black hover:bg-gray-800 text-white font-medium h-10">
+          {saving ? <Loader2 className="animate-spin h-4 w-4" /> : <><Save size={14} className="mr-1.5" /> Save Changes</>}
+        </Button>
       </form>
 
-      <Card className="mt-8 bg-slate-50 border-slate-200">
-        <CardHeader className="pb-4">
-          <CardTitle className="text-base font-semibold text-slate-700">Quick Actions</CardTitle>
-        </CardHeader>
-        <CardContent className="flex gap-4">
-          <Button variant="outline" className="flex-1 border-emerald-200 text-emerald-700 hover:bg-emerald-50" onClick={handleMarkAsSold}>
-            <CheckCircle size={18} className="mr-2" /> Mark as Sold
+      {/* Quick Actions */}
+      <div className="mt-8 pt-6 border-t border-gray-200 space-y-3">
+        <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Actions</p>
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            className="flex-1 h-9 text-sm border-gray-200 hover:bg-gray-50"
+            onClick={handleMarkAsSold}
+          >
+            <CheckCircle size={14} className="mr-1.5" /> Mark Sold
           </Button>
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button variant="outline" className="flex-1 border-rose-200 text-rose-600 hover:bg-rose-50">
-                <Trash2 size={18} className="mr-2" /> Delete Listing
+              <Button variant="outline" className="flex-1 h-9 text-sm border-gray-200 text-red-600 hover:bg-red-50">
+                <Trash2 size={14} className="mr-1.5" /> Delete
               </Button>
             </AlertDialogTrigger>
-            <AlertDialogContent>
+            <AlertDialogContent className="bg-white border-gray-200">
               <AlertDialogHeader>
-                <AlertDialogTitle>Delete Permanently?</AlertDialogTitle>
-                <AlertDialogDescription>This action cannot be undone. Your listing will be removed from the marketplace.</AlertDialogDescription>
+                <AlertDialogTitle>Delete listing?</AlertDialogTitle>
+                <AlertDialogDescription>This cannot be undone.</AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={handleDelete} className="bg-rose-600 text-white hover:bg-rose-700">Confirm Delete</AlertDialogAction>
+                <AlertDialogCancel className="border-gray-200">Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={handleDelete} className="bg-red-600 hover:bg-red-700 text-white">Delete</AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
-        </CardContent>
-      </Card>
-    </motion.div>
+        </div>
+      </div>
+    </div>
   );
 }

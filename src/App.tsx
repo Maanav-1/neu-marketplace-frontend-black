@@ -1,8 +1,8 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '@/store/authStore';
 import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
+import Footer from './components/Footer';
 import VerificationBanner from '@/components/VerificationBanner';
 import { Toaster } from '@/components/ui/toaster';
 
@@ -38,36 +38,54 @@ function ProtectedRoute({
   return <>{children}</>;
 }
 
+function AppContent() {
+  const location = useLocation();
+  const isHomePage = location.pathname === '/';
+
+  return (
+    <div className={`min-h-screen flex flex-col bg-white text-gray-900 ${isHomePage ? 'overflow-hidden' : ''}`}>
+      <Navbar />
+      <VerificationBanner />
+      {isHomePage ? (
+        // Home page has its own layout with fixed sidebar
+        <Routes>
+          <Route path="/" element={<Home />} />
+        </Routes>
+      ) : (
+        // Other pages get standard layout with footer
+        <>
+          <main className="flex-1 px-4 lg:px-8 py-6">
+            <Routes>
+              <Route path="/listings/:slug" element={<ListingDetail />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/signup" element={<Signup />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
+              <Route path="/oauth/callback" element={<OAuthCallback />} />
+              <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+              <Route path="/my-listings" element={<ProtectedRoute><MyListings /></ProtectedRoute>} />
+              <Route path="/saved" element={<ProtectedRoute><SavedListings /></ProtectedRoute>} />
+              <Route path="/inbox" element={<ProtectedRoute><Inbox /></ProtectedRoute>} />
+              <Route path="/chat/:conversationId" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
+              <Route path="/create" element={<ProtectedRoute><CreateListing /></ProtectedRoute>} />
+              <Route path="/listings/:slug/edit" element={<ProtectedRoute><EditListing /></ProtectedRoute>} />
+              <Route path="/admin" element={<ProtectedRoute adminOnly><AdminDashboard /></ProtectedRoute>} />
+              <Route path="/admin/users" element={<ProtectedRoute adminOnly><UserManagement /></ProtectedRoute>} />
+              <Route path="/admin/reports" element={<ProtectedRoute adminOnly><ReportManagement /></ProtectedRoute>} />
+            </Routes>
+          </main>
+          <Footer />
+        </>
+      )}
+      <Toaster />
+    </div>
+  );
+}
+
 function App() {
   return (
     <Router>
-      <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900">
-        <Navbar />
-        <VerificationBanner />
-        <main className="flex-1 px-4 lg:px-8 py-6">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/listings/:slug" element={<ListingDetail />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route path="/reset-password" element={<ResetPassword />} />
-            <Route path="/oauth/callback" element={<OAuthCallback />} />
-            <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-            <Route path="/my-listings" element={<ProtectedRoute><MyListings /></ProtectedRoute>} />
-            <Route path="/saved" element={<ProtectedRoute><SavedListings /></ProtectedRoute>} />
-            <Route path="/inbox" element={<ProtectedRoute><Inbox /></ProtectedRoute>} />
-            <Route path="/chat/:conversationId" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
-            <Route path="/create" element={<ProtectedRoute><CreateListing /></ProtectedRoute>} />
-            <Route path="/listings/:slug/edit" element={<ProtectedRoute><EditListing /></ProtectedRoute>} />
-            <Route path="/admin" element={<ProtectedRoute adminOnly><AdminDashboard /></ProtectedRoute>} />
-            <Route path="/admin/users" element={<ProtectedRoute adminOnly><UserManagement /></ProtectedRoute>} />
-            <Route path="/admin/reports" element={<ProtectedRoute adminOnly><ReportManagement /></ProtectedRoute>} />
-          </Routes>
-        </main>
-        <Footer />
-        <Toaster />
-      </div>
+      <AppContent />
     </Router>
   );
 }

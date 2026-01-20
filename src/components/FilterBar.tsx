@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { SlidersHorizontal, X, ChevronDown, ChevronUp } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { X, ChevronDown, ChevronUp } from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
 import type { Condition } from '@/types';
 
 interface FilterState {
@@ -37,16 +37,16 @@ export default function FilterBar({ filters, setFilters }: FilterBarProps) {
     return (
         <div className="w-full space-y-3">
             {/* Main Filter Bar */}
-            <div className="flex items-center gap-3 flex-wrap">
+            <div className="flex items-center gap-2 flex-wrap">
                 {/* Condition Pills */}
-                <div className="flex items-center gap-2 flex-wrap">
+                <div className="flex items-center gap-1.5 flex-wrap">
                     {CONDITIONS.map((c) => (
                         <button
                             key={c.value}
                             onClick={() => setFilters({ ...filters, condition: c.value })}
-                            className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all border ${filters.condition === c.value
-                                ? 'bg-indigo-600 border-indigo-600 text-white shadow-sm'
-                                : 'bg-white border-slate-200 text-slate-600 hover:border-indigo-300 hover:text-indigo-600'
+                            className={`px-2.5 py-1 rounded text-xs font-medium transition-all border ${filters.condition === c.value
+                                    ? 'bg-black border-black text-white'
+                                    : 'bg-white border-gray-200 text-gray-600 hover:border-gray-400 hover:text-black'
                                 }`}
                         >
                             {c.label}
@@ -55,28 +55,25 @@ export default function FilterBar({ filters, setFilters }: FilterBarProps) {
                 </div>
 
                 {/* Expand Price Filters */}
-                <Button
-                    variant="outline"
-                    size="sm"
+                <button
                     onClick={() => setExpanded(!expanded)}
-                    className={`rounded-full border-slate-200 hover:border-indigo-300 hover:text-indigo-600 ${expanded ? 'bg-indigo-50 border-indigo-300 text-indigo-600' : ''
+                    className={`px-2.5 py-1 rounded text-xs font-medium transition-all border flex items-center gap-1 ${expanded
+                            ? 'bg-gray-100 border-gray-300 text-black'
+                            : 'bg-white border-gray-200 text-gray-600 hover:border-gray-400'
                         }`}
                 >
-                    <SlidersHorizontal className="mr-2 h-4 w-4" />
                     Price
-                    {expanded ? <ChevronUp className="ml-1 h-3 w-3" /> : <ChevronDown className="ml-1 h-3 w-3" />}
-                </Button>
+                    {expanded ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+                </button>
 
                 {/* Clear Filters */}
                 {hasActiveFilters && (
-                    <Button
-                        variant="ghost"
-                        size="sm"
+                    <button
                         onClick={resetFilters}
-                        className="text-slate-500 hover:text-rose-600 hover:bg-rose-50 rounded-full"
+                        className="text-xs text-gray-500 hover:text-black transition-colors flex items-center gap-0.5"
                     >
-                        <X className="mr-1 h-3 w-3" /> Clear
-                    </Button>
+                        <X className="h-3 w-3" /> Clear
+                    </button>
                 )}
             </div>
 
@@ -87,32 +84,32 @@ export default function FilterBar({ filters, setFilters }: FilterBarProps) {
                         initial={{ height: 0, opacity: 0 }}
                         animate={{ height: 'auto', opacity: 1 }}
                         exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.2 }}
+                        transition={{ duration: 0.15 }}
                         className="overflow-hidden"
                     >
-                        <div className="flex items-center gap-3 pt-2">
-                            <span className="text-sm text-slate-500 font-medium">Price:</span>
+                        <div className="flex items-center gap-2 pt-1">
+                            <span className="text-xs text-gray-500">Price:</span>
                             <div className="relative">
-                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">$</span>
+                                <span className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400 text-xs">$</span>
                                 <Input
                                     type="number"
                                     min="0"
                                     placeholder="Min"
                                     value={filters.minPrice}
                                     onChange={(e) => setFilters({ ...filters, minPrice: e.target.value })}
-                                    className="w-24 pl-7 h-9 bg-white border-slate-200 focus:border-indigo-400 focus:ring-indigo-400"
+                                    className="w-20 pl-5 h-7 text-xs bg-white border-gray-200 focus:border-gray-400 focus:ring-0"
                                 />
                             </div>
-                            <span className="text-slate-300">—</span>
+                            <span className="text-gray-300">–</span>
                             <div className="relative">
-                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">$</span>
+                                <span className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400 text-xs">$</span>
                                 <Input
                                     type="number"
                                     min="0"
                                     placeholder="Max"
                                     value={filters.maxPrice}
                                     onChange={(e) => setFilters({ ...filters, maxPrice: e.target.value })}
-                                    className="w-24 pl-7 h-9 bg-white border-slate-200 focus:border-indigo-400 focus:ring-indigo-400"
+                                    className="w-20 pl-5 h-7 text-xs bg-white border-gray-200 focus:border-gray-400 focus:ring-0"
                                 />
                             </div>
                         </div>

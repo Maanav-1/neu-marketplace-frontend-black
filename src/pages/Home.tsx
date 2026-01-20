@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import api from '@/api/client';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Search, PackageSearch, Loader2, Plus, LogIn, Tag } from 'lucide-react';
+import { Search, PackageSearch, Loader2, Plus, ArrowRight } from 'lucide-react';
 import ListingCard from '@/components/ListingCard';
 import CategorySidebar from '@/components/CategorySidebar';
 import FilterBar from '@/components/FilterBar';
+import Footer from '../components/Footer';
 import { useAuthStore } from '@/store/authStore';
 
 import type { Listing, Category, Condition, PagedResponse } from '@/types';
@@ -82,122 +83,125 @@ export default function Home() {
   };
 
   return (
-    <div className="flex gap-8">
-      {/* Category Sidebar */}
-      <CategorySidebar selectedCategory={category} onSelect={setCategory} />
-
-      {/* Main Content */}
-      <div className="flex-1 space-y-6">
-        {/* Search Bar */}
-        <div className="relative max-w-2xl">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
-          <Input
-            placeholder="Search textbooks, furniture, electronics..."
-            className="h-12 pl-12 bg-white border-slate-200 rounded-xl text-base shadow-sm"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
+    <div className="flex h-[calc(100vh-56px)] overflow-hidden">
+      {/* Fixed Category Sidebar */}
+      <div className="hidden lg:block w-52 shrink-0 border-r border-gray-200">
+        <div className="p-4 h-full flex flex-col">
+          <CategorySidebar selectedCategory={category} onSelect={setCategory} />
         </div>
+      </div>
 
-        {/* Filter Bar */}
-        <FilterBar filters={filters} setFilters={setFilters} />
-
-        {/* Sign-in CTA for non-authenticated users */}
-        {!useAuthStore.getState().user && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="bg-gradient-to-r from-indigo-600 to-violet-600 rounded-2xl p-5 text-white shadow-lg"
-          >
-            <div className="flex items-center justify-between gap-4">
-              <div className="flex items-center gap-4">
-                <div className="h-12 w-12 rounded-xl bg-white/20 flex items-center justify-center">
-                  <Tag className="h-6 w-6" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-lg">Got stuff to sell?</h3>
-                  <p className="text-white/80 text-sm">Sign in to post listings and reach the NEU community</p>
-                </div>
-              </div>
-              <Link to="/login">
-                <Button className="bg-white text-indigo-600 hover:bg-white/90 font-semibold h-11 px-6 rounded-xl shadow-md">
-                  <LogIn className="h-4 w-4 mr-2" />
-                  Sign In
-                </Button>
-              </Link>
-            </div>
-          </motion.div>
-        )}
-
-        {/* Header */}
-        <div className="flex justify-between items-end">
-          <div>
-            <h2 className="text-2xl font-bold text-slate-900">
-              {category === 'ALL' ? 'Latest Discoveries' : category.replace('_', ' ')}
-            </h2>
-            <p className="text-slate-500 text-sm mt-1">
-              {search ? `Results for "${search}"` : 'For the Northeastern community'}
-            </p>
+      {/* Scrollable Main Content */}
+      <div className="flex-1 overflow-y-auto scrollbar-hide">
+        <div className="max-w-6xl mx-auto px-6 py-6 space-y-6">
+          {/* Search Bar */}
+          <div className="relative max-w-xl">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Input
+              placeholder="Search items..."
+              className="h-10 pl-10 bg-white border-gray-200 rounded-lg text-sm focus:border-gray-400 focus:ring-0"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
           </div>
-          <span className="text-xs font-semibold text-slate-500 bg-white px-3 py-1.5 rounded-full border border-slate-200">
-            {listings.length} items
-          </span>
-        </div>
 
-        {/* Listings Grid */}
-        <AnimatePresence mode="popLayout">
-          {loading ? (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
-              {[...Array(8)].map((_, i) => (
-                <div key={i} className="aspect-square rounded-2xl bg-slate-200 animate-pulse" />
-              ))}
+          {/* Filter Bar */}
+          <FilterBar filters={filters} setFilters={setFilters} />
+
+          {/* Sign-in CTA for non-authenticated users */}
+          {!useAuthStore.getState().user && (
+            <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-black">Ready to sell?</p>
+                  <p className="text-xs text-gray-500 mt-0.5">Sign in to list your items</p>
+                </div>
+                <Link to="/login">
+                  <Button size="sm" className="bg-black hover:bg-gray-800 text-white text-xs h-8 px-3">
+                    Sign In <ArrowRight className="ml-1 h-3 w-3" />
+                  </Button>
+                </Link>
+              </div>
             </div>
-          ) : listings.length > 0 ? (
-            <div className="space-y-8">
+          )}
+
+          {/* Header */}
+          <div className="flex justify-between items-end pt-2">
+            <div>
+              <h2 className="text-lg font-semibold text-black">
+                {category === 'ALL' ? 'All Items' : category.replace('_', ' ')}
+              </h2>
+              {search && (
+                <p className="text-gray-500 text-xs mt-0.5">Results for "{search}"</p>
+              )}
+            </div>
+            <span className="text-xs text-gray-400">
+              {listings.length} items
+            </span>
+          </div>
+
+          {/* Listings Grid */}
+          <AnimatePresence mode="popLayout">
+            {loading ? (
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                {[...Array(8)].map((_, i) => (
+                  <div key={i}>
+                    <div className="aspect-square rounded-lg bg-gray-100 animate-pulse mb-3" />
+                    <div className="h-4 bg-gray-100 rounded animate-pulse mb-2 w-3/4" />
+                    <div className="h-3 bg-gray-100 rounded animate-pulse w-1/2" />
+                  </div>
+                ))}
+              </div>
+            ) : listings.length > 0 ? (
+              <div className="space-y-8">
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
+                >
+                  {listings.map((item) => (
+                    <ListingCard key={item.id} item={item} />
+                  ))}
+                </motion.div>
+
+                {/* Load More */}
+                {!isLastPage && (
+                  <div className="flex justify-center pt-4">
+                    <Button
+                      onClick={handleLoadMore}
+                      disabled={loadingMore}
+                      variant="outline"
+                      className="h-9 px-6 text-sm border-gray-200 hover:border-gray-400 hover:bg-gray-50"
+                    >
+                      {loadingMore ? (
+                        <Loader2 className="animate-spin h-4 w-4" />
+                      ) : (
+                        <span className="flex items-center gap-1.5">
+                          <Plus size={14} /> Load More
+                        </span>
+                      )}
+                    </Button>
+                  </div>
+                )}
+              </div>
+            ) : (
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5"
+                className="flex flex-col items-center justify-center py-16"
               >
-                {listings.map((item) => (
-                  <ListingCard key={item.id} item={item} />
-                ))}
+                <PackageSearch className="h-10 w-10 text-gray-300 mb-3" />
+                <h3 className="text-sm font-medium text-gray-700">No items found</h3>
+                <p className="text-gray-400 text-xs mt-1">
+                  Try adjusting your filters or search query.
+                </p>
               </motion.div>
+            )}
+          </AnimatePresence>
 
-              {/* Load More */}
-              {!isLastPage && (
-                <div className="flex justify-center">
-                  <Button
-                    onClick={handleLoadMore}
-                    disabled={loadingMore}
-                    variant="outline"
-                    className="h-11 px-8 rounded-full border-slate-300 bg-white hover:bg-slate-50 font-semibold"
-                  >
-                    {loadingMore ? (
-                      <Loader2 className="animate-spin h-5 w-5" />
-                    ) : (
-                      <span className="flex items-center gap-2">
-                        <Plus size={16} /> Load More
-                      </span>
-                    )}
-                  </Button>
-                </div>
-              )}
-            </div>
-          ) : (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="flex flex-col items-center justify-center py-20 bg-white rounded-2xl border border-slate-200"
-            >
-              <PackageSearch className="h-12 w-12 text-slate-300 mb-4" />
-              <h3 className="text-lg font-semibold text-slate-700">No items found</h3>
-              <p className="text-slate-500 text-sm mt-2">
-                Try adjusting your filters or search query.
-              </p>
-            </motion.div>
-          )}
-        </AnimatePresence>
+          {/* Footer - only on right side */}
+          <Footer />
+        </div>
       </div>
     </div>
   );

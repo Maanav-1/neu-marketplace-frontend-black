@@ -1,8 +1,5 @@
 import { Link } from 'react-router-dom';
 import type { Listing } from '@/types';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { motion } from 'framer-motion';
 import { Clock } from 'lucide-react';
 
 export default function ListingCard({ item }: { item: Listing }) {
@@ -13,74 +10,65 @@ export default function ListingCard({ item }: { item: Listing }) {
 
   return (
     <Link to={`/listings/${item.slug}`}>
-      <motion.div
-        whileHover={{ y: -4 }}
-        transition={{ type: "spring", stiffness: 400, damping: 25 }}
-      >
-        <Card className="group overflow-hidden border-slate-200 bg-white rounded-2xl relative shadow-sm hover:shadow-xl transition-all duration-300">
+      <div className="group">
+        {/* Image Container */}
+        <div className="aspect-square relative overflow-hidden rounded-lg bg-gray-100 border border-gray-200 mb-3">
+          {item.thumbnailUrl ? (
+            <img
+              src={item.thumbnailUrl}
+              className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
+              alt={item.title}
+            />
+          ) : item.images && item.images[0] ? (
+            <img
+              src={item.images[0].imageUrl}
+              className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
+              alt={item.title}
+            />
+          ) : (
+            <div className="flex items-center justify-center h-full text-gray-400 text-sm">
+              No Image
+            </div>
+          )}
+
           {/* SOLD Badge */}
           {item.status === 'SOLD' && (
-            <div className="absolute top-3 right-3 z-10">
-              <Badge className="bg-emerald-500 text-white border-emerald-600 px-3 py-1 font-bold text-xs uppercase shadow-md">
-                SOLD
-              </Badge>
+            <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+              <span className="text-white font-semibold text-sm tracking-wide">SOLD</span>
             </div>
           )}
 
           {/* Expiring Soon Badge */}
           {item.status !== 'SOLD' && isExpiringSoon && (
-            <div className="absolute top-3 right-3 z-10">
-              <Badge className="bg-rose-50 text-rose-600 border-rose-200 px-2 py-1 flex gap-1 items-center">
-                <Clock size={10} className="animate-pulse" />
-                <span className="text-xs font-semibold">{diffDays}d left</span>
-              </Badge>
+            <div className="absolute top-2 right-2">
+              <span className="bg-white/90 backdrop-blur-sm text-gray-700 text-xs font-medium px-2 py-1 rounded flex items-center gap-1">
+                <Clock size={10} /> {diffDays}d left
+              </span>
             </div>
           )}
+        </div>
 
-          {/* Image Container */}
-          <div className="aspect-square relative overflow-hidden bg-slate-100">
-            {item.thumbnailUrl ? (
-              <img
-                src={item.thumbnailUrl}
-                className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500"
-                alt={item.title}
-              />
-            ) : item.images && item.images[0] ? (
-              <img
-                src={item.images[0].imageUrl}
-                className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500"
-                alt={item.title}
-              />
-            ) : (
-              <div className="flex items-center justify-center h-full text-slate-400 font-medium text-sm">
-                No Image
-              </div>
-            )}
-
-            {/* Category Badge */}
-            <div className="absolute top-3 left-3">
-              <Badge className="bg-white/95 backdrop-blur-sm border-slate-200 text-slate-700 text-xs font-medium shadow-sm">
-                {item.categoryDisplayName}
-              </Badge>
-            </div>
-          </div>
-
-          {/* Content */}
-          <div className="p-4 space-y-2">
-            <h3 className="font-semibold text-slate-900 text-base truncate group-hover:text-indigo-600 transition-colors">
+        {/* Content */}
+        <div className="space-y-1">
+          <div className="flex items-start justify-between gap-2">
+            <h3 className="font-medium text-gray-900 text-sm truncate group-hover:text-black transition-colors">
               {item.title}
             </h3>
-            <div className="flex justify-between items-center">
-              <span className="text-xl font-bold text-indigo-600">
-                ${item.price}
-              </span>
-              <span className="text-xs text-slate-500 font-medium bg-slate-100 px-2.5 py-1 rounded-full">
-                {item.conditionDisplayName}
-              </span>
-            </div>
+            <span className="text-sm font-semibold text-black shrink-0">
+              ${item.price}
+            </span>
           </div>
-        </Card>
-      </motion.div>
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-gray-500">
+              {item.categoryDisplayName}
+            </span>
+            <span className="text-gray-300">·</span>
+            <span className="text-xs text-gray-500">
+              {item.conditionDisplayName}
+            </span>
+          </div>
+        </div>
+      </div>
     </Link>
   );
 }

@@ -4,73 +4,72 @@
 
 @layer base {
   :root {
-    /* Light Theme - Modern Startup Aesthetic */
+    /* Vercel-Style Minimalist Theme */
     --background: 0 0% 100%;
-    --foreground: 222 47% 11%;
-    
-    /* Clean slate-based grays */
+    --foreground: 0 0% 0%;
+
+    /* Clean grayscale cards */
     --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
+    --card-foreground: 0 0% 0%;
     --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
-    
-    /* Indigo primary - modern tech feel */
-    --primary: 239 84% 67%;
+    --popover-foreground: 0 0% 0%;
+
+    /* Vercel blue accent - used sparingly */
+    --primary: 212 100% 48%;
     --primary-foreground: 0 0% 100%;
-    
-    /* Secondary - subtle slate */
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 222 47% 11%;
-    
+
+    /* Secondary - subtle gray */
+    --secondary: 0 0% 96%;
+    --secondary-foreground: 0 0% 0%;
+
     /* Muted elements */
-    --muted: 210 40% 96%;
-    --muted-foreground: 215 16% 47%;
-    
-    /* Accent - same as secondary for light theme */
-    --accent: 210 40% 96%;
-    --accent-foreground: 222 47% 11%;
-    
-    /* Destructive - rose red */
-    --destructive: 0 84% 60%;
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 40%;
+
+    /* Accent */
+    --accent: 0 0% 96%;
+    --accent-foreground: 0 0% 0%;
+
+    /* Destructive - clean red */
+    --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
-    
-    /* Borders and inputs */
-    --border: 214 32% 91%;
-    --input: 214 32% 91%;
-    --ring: 239 84% 67%;
-    
-    /* Radius - slightly more rounded for modern feel */
-    --radius: 0.75rem;
-    
-    /* Chart colors - vibrant palette */
-    --chart-1: 239 84% 67%;
+
+    /* Borders - subtle gray */
+    --border: 0 0% 90%;
+    --input: 0 0% 90%;
+    --ring: 212 100% 48%;
+
+    /* Tighter radius for sharper look */
+    --radius: 0.5rem;
+
+    /* Chart colors */
+    --chart-1: 212 100% 48%;
     --chart-2: 160 84% 39%;
     --chart-3: 38 92% 50%;
     --chart-4: 280 68% 60%;
     --chart-5: 340 75% 55%;
   }
 
-  /* Dark mode support if needed later */
   .dark {
-    --background: 222 47% 11%;
-    --foreground: 210 40% 98%;
-    --card: 222 47% 11%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222 47% 11%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 239 84% 67%;
+    --background: 0 0% 0%;
+    --foreground: 0 0% 100%;
+    --card: 0 0% 4%;
+    --card-foreground: 0 0% 100%;
+    --popover: 0 0% 4%;
+    --popover-foreground: 0 0% 100%;
+    --primary: 212 100% 48%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 217 33% 17%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217 33% 17%;
-    --muted-foreground: 215 20% 65%;
-    --accent: 217 33% 17%;
-    --accent-foreground: 210 40% 98%;
+    --secondary: 0 0% 10%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 0 0% 10%;
+    --muted-foreground: 0 0% 60%;
+    --accent: 0 0% 10%;
+    --accent-foreground: 0 0% 100%;
     --destructive: 0 63% 31%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217 33% 17%;
-    --input: 217 33% 17%;
-    --ring: 239 84% 67%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 0 0% 15%;
+    --input: 0 0% 15%;
+    --ring: 212 100% 48%;
   }
 }
 
@@ -78,21 +77,21 @@
   * {
     @apply border-border;
   }
-  
+
   html {
     @apply scroll-smooth;
   }
-  
+
   body {
     @apply bg-background text-foreground antialiased;
     font-feature-settings: "rlig" 1, "calt" 1;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
-  
-  /* Selection color matching primary */
+
+  /* Clean selection */
   ::selection {
-    @apply bg-indigo-100 text-indigo-900;
+    @apply bg-black/10 text-black;
   }
 }
 
@@ -101,14 +100,44 @@
   .text-balance {
     text-wrap: balance;
   }
-  
+
   /* Smooth transitions for interactive elements */
   .transition-smooth {
-    @apply transition-all duration-200 ease-out;
+    @apply transition-all duration-150 ease-out;
   }
-  
-  /* Glass effect for cards */
-  .glass {
-    @apply bg-white/80 backdrop-blur-sm;
+
+  /* Vercel-style subtle hover */
+  .hover-lift {
+    @apply transition-transform duration-200 hover:-translate-y-0.5;
+  }
+
+  /* Hide scrollbar but keep scroll functionality */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+    /* Chrome, Safari, Opera */
+  }
+
+  /* Custom select styling */
+  select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    padding-right: 36px;
+    cursor: pointer;
+    transition: border-color 0.15s ease;
+  }
+
+  select:hover {
+    border-color: #9ca3af;
   }
 }
