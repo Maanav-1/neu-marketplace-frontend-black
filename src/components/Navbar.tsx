@@ -56,7 +56,7 @@ export default function Navbar() {
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="text-slate-600 hover:text-indigo-600 hover:bg-indigo-50"
+                  className="bg-indigo-50 text-indigo-600 hover:bg-indigo-100 hover:shadow-md hover:shadow-indigo-200/50 hover:ring-1 hover:ring-indigo-200 transition-all duration-200"
                 >
                   <Package className="mr-2 h-4 w-4" /> My Listings
                 </Button>
@@ -67,7 +67,7 @@ export default function Navbar() {
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="text-slate-600 hover:text-indigo-600 hover:bg-indigo-50"
+                  className="bg-indigo-50 text-indigo-600 hover:bg-indigo-100 hover:shadow-md hover:shadow-indigo-200/50 hover:ring-1 hover:ring-indigo-200 transition-all duration-200"
                 >
                   <Heart className="mr-2 h-4 w-4" /> Saved
                 </Button>
@@ -78,7 +78,7 @@ export default function Navbar() {
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="text-slate-600 hover:text-indigo-600 hover:bg-indigo-50"
+                  className="bg-indigo-50 text-indigo-600 hover:bg-indigo-100 hover:shadow-md hover:shadow-indigo-200/50 hover:ring-1 hover:ring-indigo-200 transition-all duration-200"
                 >
                   <MessageSquare className="mr-2 h-4 w-4" /> Chats
                 </Button>

@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import api from '@/api/client';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Search, PackageSearch, Loader2, Plus } from 'lucide-react';
+import { Search, PackageSearch, Loader2, Plus, LogIn, Tag } from 'lucide-react';
 import ListingCard from '@/components/ListingCard';
 import CategorySidebar from '@/components/CategorySidebar';
 import FilterBar from '@/components/FilterBar';
+import { useAuthStore } from '@/store/authStore';
 
 import type { Listing, Category, Condition, PagedResponse } from '@/types';
 
@@ -99,6 +101,33 @@ export default function Home() {
 
         {/* Filter Bar */}
         <FilterBar filters={filters} setFilters={setFilters} />
+
+        {/* Sign-in CTA for non-authenticated users */}
+        {!useAuthStore.getState().user && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-gradient-to-r from-indigo-600 to-violet-600 rounded-2xl p-5 text-white shadow-lg"
+          >
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center gap-4">
+                <div className="h-12 w-12 rounded-xl bg-white/20 flex items-center justify-center">
+                  <Tag className="h-6 w-6" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-lg">Got stuff to sell?</h3>
+                  <p className="text-white/80 text-sm">Sign in to post listings and reach the NEU community</p>
+                </div>
+              </div>
+              <Link to="/login">
+                <Button className="bg-white text-indigo-600 hover:bg-white/90 font-semibold h-11 px-6 rounded-xl shadow-md">
+                  <LogIn className="h-4 w-4 mr-2" />
+                  Sign In
+                </Button>
+              </Link>
+            </div>
+          </motion.div>
+        )}
 
         {/* Header */}
         <div className="flex justify-between items-end">

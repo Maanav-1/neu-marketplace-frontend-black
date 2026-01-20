@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   User,
+  Users,
   Mail,
   Lock,
   Loader2,
@@ -266,7 +267,7 @@ export default function Signup() {
           {[
             { label: 'Secure', icon: ShieldCheck },
             { label: 'Verified', icon: CheckCircle2 },
-            { label: 'Internal', icon: User }
+            { label: 'Community', icon: Users }
           ].map((item, i) => (
             <div key={i} className="flex flex-col items-center gap-2">
               <div className="h-10 w-10 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center">
