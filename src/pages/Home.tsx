@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Search, PackageSearch, Loader2, Plus } from 'lucide-react';
 import ListingCard from '@/components/ListingCard';
 import CategorySidebar from '@/components/CategorySidebar';
-import FilterDrawer from '@/components/FilterDrawer';
+import FilterBar from '@/components/FilterBar';
 
 // Type-only imports for TS strictness
 import type { Listing, Category, Condition, PagedResponse } from '@/types';
@@ -17,7 +17,7 @@ export default function Home() {
   const [category, setCategory] = useState<Category | 'ALL'>('ALL');
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
-  
+
   // Pagination State
   const [page, setPage] = useState(0);
   const [isLastPage, setIsLastPage] = useState(false);
@@ -32,14 +32,14 @@ export default function Home() {
   const fetchListings = async (pageNum: number, isNewSearch: boolean = false) => {
     try {
       pageNum === 0 ? setLoading(true) : setLoadingMore(true);
-      
-      const params: any = { 
-        search: search.trim(), 
-        page: pageNum, 
-        size: 12, 
+
+      const params: any = {
+        search: search.trim(),
+        page: pageNum,
+        size: 12,
         sort: 'newest'
       };
-      
+
       if (category !== 'ALL') params.category = category;
 
       // Safety Gate: Do not send negative values or non-numeric strings to backend
@@ -56,14 +56,14 @@ export default function Home() {
       if (filters.condition !== 'ALL') params.condition = filters.condition;
 
       const { data } = await api.get<PagedResponse<Listing>>('/listings', { params });
-      
+
       // Append results for pagination or replace for new search
       if (isNewSearch) {
         setListings(data.content);
       } else {
         setListings(prev => [...prev, ...data.content]);
       }
-      
+
       setIsLastPage(data.last);
     } catch (err) {
       console.error("Failed to fetch listings:", err);
@@ -95,53 +95,51 @@ export default function Home() {
       <CategorySidebar selectedCategory={category} onSelect={setCategory} />
 
       {/* 2. Main Content Area */}
-      <div className="flex-1 space-y-8">
-        
-        {/* Search & Filter Header */}
-        <div className="flex flex-col md:flex-row gap-4 items-center">
-          <div className="relative flex-1 w-full">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-zinc-500" />
-            <Input 
-              placeholder="Search textbooks, furniture, electronics..." 
-              className="h-14 pl-12 bg-zinc-950 border-zinc-800 rounded-2xl text-base focus:ring-blue-600 transition-all shadow-inner"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-          </div>
-          
-          <FilterDrawer 
-            filters={filters} 
-            setFilters={setFilters} 
-            onApply={() => fetchListings(0, true)} 
+      <div className="flex-1 space-y-6">
+
+        {/* Search Bar */}
+        <div className="relative">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
+          <Input
+            placeholder="Search textbooks, furniture, electronics..."
+            className="h-12 pl-12 bg-white border-slate-200 rounded-xl text-base focus:ring-indigo-500 focus:border-indigo-500 shadow-sm"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
           />
         </div>
 
+        {/* Inline Filter Bar */}
+        <FilterBar filters={filters} setFilters={setFilters} />
+
         {/* 3. Listings Section */}
         <div>
-          <div className="flex justify-between items-end mb-8">
+          <div className="flex justify-between items-end mb-6">
             <div>
-              <h2 className="text-3xl font-black tracking-tighter">
+              <h2 className="text-2xl font-bold text-slate-900 tracking-tight">
                 {category === 'ALL' ? 'Latest Discoveries' : category.replace('_', ' ')}
               </h2>
-              <p className="text-zinc-500 text-sm font-medium mt-1">
+              <p className="text-slate-500 text-sm mt-1">
                 {search ? `Showing results for "${search}"` : 'Handpicked for the Northeastern community'}
               </p>
             </div>
-            <p className="hidden sm:block text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 bg-zinc-900 px-3 py-1 rounded-full border border-zinc-800">
-              {listings.length} Husky Listings
-            </p>
+            <span className="hidden sm:block text-xs font-semibold text-slate-500 bg-slate-100 px-3 py-1.5 rounded-full">
+              {listings.length} items
+            </span>
           </div>
 
           <AnimatePresence mode="popLayout">
             {loading ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
                 {[...Array(6)].map((_, i) => (
-                  <div key={i} className="h-80 rounded-3xl bg-zinc-900/50 animate-pulse border border-zinc-800" />
+                  <div
+                    key={i}
+                    className="h-80 rounded-2xl bg-slate-100 animate-pulse"
+                  />
                 ))}
               </div>
             ) : listings.length > 0 ? (
-              <div className="space-y-12">
-                <motion.div 
+              <div className="space-y-10">
+                <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6"
@@ -154,17 +152,17 @@ export default function Home() {
                 {/* Load More Button */}
                 {!isLastPage && (
                   <div className="flex justify-center pt-4">
-                    <Button 
+                    <Button
                       onClick={handleLoadMore}
                       disabled={loadingMore}
                       variant="outline"
-                      className="h-14 px-10 rounded-2xl border-zinc-800 bg-zinc-950 hover:bg-zinc-900 font-bold uppercase tracking-widest text-xs transition-all shadow-xl"
+                      className="h-12 px-8 rounded-full border-slate-200 bg-white hover:bg-slate-50 hover:border-indigo-300 font-semibold text-slate-700 shadow-sm transition-all"
                     >
                       {loadingMore ? (
                         <Loader2 className="animate-spin h-5 w-5" />
                       ) : (
                         <span className="flex items-center gap-2">
-                          <Plus size={16} /> Load More Items
+                          <Plus size={16} /> Load More
                         </span>
                       )}
                     </Button>
@@ -172,14 +170,14 @@ export default function Home() {
                 )}
               </div>
             ) : (
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="flex flex-col items-center justify-center py-32 bg-zinc-950/50 rounded-[2.5rem] border border-dashed border-zinc-800"
+                className="flex flex-col items-center justify-center py-24 bg-slate-50 rounded-3xl border-2 border-dashed border-slate-200"
               >
-                <PackageSearch className="h-10 w-10 text-zinc-700 mb-6" />
-                <h3 className="text-xl font-bold tracking-tight text-white">No items found</h3>
-                <p className="text-zinc-500 text-sm mt-2 max-w-xs text-center">
+                <PackageSearch className="h-12 w-12 text-slate-300 mb-4" />
+                <h3 className="text-lg font-semibold text-slate-700">No items found</h3>
+                <p className="text-slate-500 text-sm mt-2 max-w-xs text-center">
                   Try adjusting your filters or searching for something else.
                 </p>
               </motion.div>

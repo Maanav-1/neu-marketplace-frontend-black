@@ -1,4 +1,4 @@
-import React from 'react'; // Added React import
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuthStore } from '@/store/authStore';
 import Navbar from '@/components/Navbar';
@@ -21,96 +21,96 @@ import UserManagement from '@/pages/admin/UserManagement';
 import ReportManagement from '@/pages/admin/ReportManagement';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
+import OAuthCallback from './pages/OAuthCallback';
 
 /**
  * ProtectedRoute Component
  * Prevents unauthorized access to specific routes.
  */
-function ProtectedRoute({ 
-  children, 
-  adminOnly = false 
-}: { 
-  children: React.ReactNode; // Changed from JSX.Element to React.ReactNode
-  adminOnly?: boolean; 
+function ProtectedRoute({
+  children,
+  adminOnly = false
+}: {
+  children: React.ReactNode;
+  adminOnly?: boolean;
 }) {
   const { user } = useAuthStore();
 
-  // If not logged in, redirect to login
   if (!user) {
     return <Navigate to="/login" replace />;
   }
 
-  // If admin route requested but user is not an admin, redirect to home
   if (adminOnly && user.role !== 'ADMIN') {
     return <Navigate to="/" replace />;
   }
 
-  return <>{children}</>; // Wrapped in a fragment for better compatibility
+  return <>{children}</>;
 }
 
 function App() {
   return (
     <Router>
-      <div className="min-h-screen flex flex-col bg-background text-foreground selection:bg-blue-500/30">
+      <div className="min-h-screen flex flex-col bg-white text-slate-900">
         {/* Global Navigation */}
         <Navbar />
-        
+
         {/* Global Verification Gate */}
         <VerificationBanner />
-        
+
         {/* Main Content Area */}
         <main className="container mx-auto px-4 md:px-8 py-8 flex-1">
           <Routes>
             {/* Public Discovery Routes */}
             <Route path="/" element={<Home />} />
             <Route path="/listings/:slug" element={<ListingDetail />} />
-            
+
             {/* Auth & Security Routes */}
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
-            
+            <Route path="/oauth/callback" element={<OAuthCallback />} />
+
             {/* Authenticated User Routes */}
             <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
             <Route path="/inbox" element={<ProtectedRoute><Inbox /></ProtectedRoute>} />
             <Route path="/chat/:conversationId" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
-            
+
             {/* Inventory Management */}
             <Route path="/create" element={<ProtectedRoute><CreateListing /></ProtectedRoute>} />
             <Route path="/edit/:slug" element={<ProtectedRoute><EditListing /></ProtectedRoute>} />
-            
+
             {/* Admin Management Routes (Gated) */}
-            <Route 
-              path="/admin" 
+            <Route
+              path="/admin"
               element={
                 <ProtectedRoute adminOnly>
                   <AdminDashboard />
                 </ProtectedRoute>
-              } 
+              }
             />
-            <Route 
-              path="/admin/users" 
+            <Route
+              path="/admin/users"
               element={
                 <ProtectedRoute adminOnly>
                   <UserManagement />
                 </ProtectedRoute>
-              } 
+              }
             />
-            <Route 
-              path="/admin/reports" 
+            <Route
+              path="/admin/reports"
               element={
                 <ProtectedRoute adminOnly>
                   <ReportManagement />
                 </ProtectedRoute>
-              } 
+              }
             />
           </Routes>
         </main>
-        
+
         {/* Global Footer */}
         <Footer />
-        
+
         {/* Toast Notifications */}
         <Toaster />
       </div>

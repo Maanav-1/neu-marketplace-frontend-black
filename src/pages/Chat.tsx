@@ -17,15 +17,12 @@ export default function Chat() {
 
   const fetchChatData = async () => {
     try {
-      // 1. Get messages
       const { data: msgData } = await api.get(`/conversations/${conversationId}/messages`);
       setMessages(msgData);
-      
-      // 2. Get conversation metadata
+
       const { data: convData } = await api.get(`/conversations/${conversationId}`);
       setConversation(convData);
-      
-      // 3. Mark as read
+
       await api.patch(`/conversations/${conversationId}/read`);
     } catch (err) {
       console.error("Polling error", err);
@@ -34,7 +31,7 @@ export default function Chat() {
 
   useEffect(() => {
     fetchChatData();
-    const interval = setInterval(fetchChatData, 3000); // Poll every 3 seconds
+    const interval = setInterval(fetchChatData, 3000);
     return () => clearInterval(interval);
   }, [conversationId]);
 
@@ -52,7 +49,7 @@ export default function Chat() {
     try {
       await api.post(`/conversations/${conversationId}/messages`, { content: newMessage });
       setNewMessage('');
-      fetchChatData(); // Immediate refresh after sending
+      fetchChatData();
     } catch (err) {
       console.error("Failed to send", err);
     } finally {
@@ -61,26 +58,32 @@ export default function Chat() {
   };
 
   return (
-    <div className="container max-w-2xl h-[85vh] flex flex-col border border-zinc-800 rounded-2xl overflow-hidden bg-zinc-950/50 backdrop-blur-xl">
+    <div className="container max-w-2xl h-[85vh] flex flex-col border border-slate-200 rounded-2xl overflow-hidden bg-white shadow-sm">
       {/* Header */}
-      <div className="p-4 border-b border-zinc-800 flex items-center gap-4 bg-zinc-950">
-        <Button variant="ghost" size="icon" onClick={() => window.history.back()}><ArrowLeft size={18}/></Button>
+      <div className="p-4 border-b border-slate-200 flex items-center gap-4 bg-slate-50">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => window.history.back()}
+          className="text-slate-500 hover:text-slate-900"
+        >
+          <ArrowLeft size={18} />
+        </Button>
         <div>
-          <h2 className="font-bold text-sm">{conversation?.otherParticipant.name}</h2>
-          <p className="text-[10px] text-zinc-500 uppercase tracking-widest">{conversation?.listing.title}</p>
+          <h2 className="font-semibold text-slate-900 text-sm">{conversation?.otherParticipant.name}</h2>
+          <p className="text-xs text-slate-500">{conversation?.listing.title}</p>
         </div>
       </div>
 
       {/* Messages */}
-      <ScrollArea className="flex-1 p-4">
-        <div className="space-y-4">
+      <ScrollArea className="flex-1 p-4 bg-slate-50/50">
+        <div className="space-y-3">
           {messages.map((msg) => (
             <div key={msg.id} className={`flex ${msg.isOwnMessage ? 'justify-end' : 'justify-start'}`}>
-              <div className={`max-w-[80%] px-4 py-2 rounded-2xl text-sm ${
-                msg.isOwnMessage 
-                ? 'bg-blue-600 text-white rounded-br-none' 
-                : 'bg-zinc-800 text-zinc-200 rounded-bl-none'
-              }`}>
+              <div className={`max-w-[80%] px-4 py-2.5 rounded-2xl text-sm ${msg.isOwnMessage
+                  ? 'bg-indigo-600 text-white rounded-br-md'
+                  : 'bg-white text-slate-700 border border-slate-200 rounded-bl-md shadow-sm'
+                }`}>
                 {msg.content}
               </div>
             </div>
@@ -90,15 +93,20 @@ export default function Chat() {
       </ScrollArea>
 
       {/* Input */}
-      <form onSubmit={handleSend} className="p-4 bg-zinc-950 border-t border-zinc-800 flex gap-2">
-        <Input 
+      <form onSubmit={handleSend} className="p-4 bg-white border-t border-slate-200 flex gap-2">
+        <Input
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
           placeholder="Type a message..."
-          className="bg-zinc-900 border-zinc-800 focus:ring-blue-600"
+          className="bg-slate-50 border-slate-200 focus:ring-indigo-500 focus:border-indigo-500"
         />
-        <Button type="submit" size="icon" disabled={sending || !newMessage.trim()} className="bg-blue-600 hover:bg-blue-700">
-          {sending ? <Loader2 className="animate-spin" size={18}/> : <Send size={18} />}
+        <Button
+          type="submit"
+          size="icon"
+          disabled={sending || !newMessage.trim()}
+          className="bg-indigo-600 hover:bg-indigo-700 h-10 w-10"
+        >
+          {sending ? <Loader2 className="animate-spin" size={18} /> : <Send size={18} />}
         </Button>
       </form>
     </div>

@@ -18,15 +18,14 @@ export default function ForgotPassword() {
     e.preventDefault();
     setLoading(true);
     try {
-      // POST /api/auth/forgot-password
       await api.post('/auth/forgot-password', { email });
       setSubmitted(true);
       toast({ title: "Email sent", description: "If an account exists, you will receive a reset link." });
     } catch (err: any) {
-      toast({ 
-        variant: "destructive", 
-        title: "Request failed", 
-        description: err.response?.data?.message || "Something went wrong." 
+      toast({
+        variant: "destructive",
+        title: "Request failed",
+        description: err.response?.data?.message || "Something went wrong."
       });
     } finally {
       setLoading(false);
@@ -36,47 +35,58 @@ export default function ForgotPassword() {
   return (
     <div className="flex justify-center items-center min-h-[70vh]">
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-        <Card className="w-[400px] border-zinc-800 bg-zinc-950/50 backdrop-blur-xl">
+        <Card className="w-[400px] border-slate-200 bg-white shadow-lg">
           <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl font-black tracking-tighter">Reset Password</CardTitle>
-            <p className="text-sm text-zinc-500">We'll send a link to your NU email.</p>
+            <CardTitle className="text-2xl font-bold text-slate-900">Reset Password</CardTitle>
+            <p className="text-sm text-slate-500">We'll send a link to your NU email.</p>
           </CardHeader>
           <CardContent>
             {!submitted ? (
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
-                  <label className="text-[10px] font-bold uppercase text-zinc-500 tracking-widest">Email Address</label>
+                  <label className="text-xs font-semibold uppercase text-slate-500 tracking-wide">
+                    Email Address
+                  </label>
                   <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-600" />
-                    <Input 
-                      type="email" 
-                      placeholder="student@northeastern.edu" 
-                      value={email} 
-                      onChange={(e) => setEmail(e.target.value)} 
-                      className="bg-zinc-900 pl-10 h-12" 
-                      required 
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                    <Input
+                      type="email"
+                      placeholder="student@northeastern.edu"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="bg-slate-50 border-slate-200 pl-10 h-11 focus:ring-indigo-500 focus:border-indigo-500"
+                      required
                     />
                   </div>
                 </div>
-                <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 font-bold h-12" disabled={loading}>
+                <Button
+                  type="submit"
+                  className="w-full bg-indigo-600 hover:bg-indigo-700 font-semibold h-11 rounded-lg"
+                  disabled={loading}
+                >
                   {loading ? <Loader2 className="animate-spin" /> : "Send Reset Link"}
                 </Button>
-                <Link to="/login" className="flex items-center justify-center gap-2 text-xs text-zinc-500 hover:text-white transition-colors pt-2">
+                <Link
+                  to="/login"
+                  className="flex items-center justify-center gap-2 text-sm text-slate-500 hover:text-indigo-600 transition-colors pt-2"
+                >
                   <ArrowLeft size={14} /> Back to Login
                 </Link>
               </form>
             ) : (
               <div className="text-center py-4 space-y-4">
                 <div className="flex justify-center">
-                  <div className="h-12 w-12 rounded-full bg-emerald-500/10 flex items-center justify-center">
-                    <CheckCircle2 className="text-emerald-500" />
+                  <div className="h-12 w-12 rounded-full bg-emerald-100 flex items-center justify-center">
+                    <CheckCircle2 className="text-emerald-600" />
                   </div>
                 </div>
-                <p className="text-sm text-zinc-400">
+                <p className="text-sm text-slate-600">
                   Check your inbox for instructions to reset your password.
                 </p>
                 <Link to="/login">
-                  <Button variant="outline" className="w-full border-zinc-800">Return to Login</Button>
+                  <Button variant="outline" className="w-full border-slate-200 hover:bg-slate-50">
+                    Return to Login
+                  </Button>
                 </Link>
               </div>
             )}

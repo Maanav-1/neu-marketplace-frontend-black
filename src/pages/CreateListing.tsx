@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Upload, X, Loader2, Plus } from 'lucide-react';
+import { Upload, X, Loader2, Plus, ImagePlus } from 'lucide-react';
 import api from '@/api/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -26,7 +26,6 @@ export default function CreateListing() {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const newFiles = Array.from(e.target.files);
-      // Strict Backend Alignment: Max 5 images
       if (images.length + newFiles.length > 5) {
         alert("Maximum 5 images allowed per listing.");
         return;
@@ -44,10 +43,8 @@ export default function CreateListing() {
     setLoading(true);
 
     try {
-      // 1. Create the Listing
       const { data: listing } = await api.post('/listings', formData);
 
-      // 2. Upload Images if any
       if (images.length > 0) {
         const imageFormData = new FormData();
         images.forEach((file) => imageFormData.append('files', file));
@@ -65,68 +62,73 @@ export default function CreateListing() {
   };
 
   return (
-    <motion.div 
-      initial={{ opacity: 0, y: 20 }} 
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       className="container max-w-3xl py-10"
     >
-      <h1 className="text-4xl font-bold tracking-tighter mb-8">List your item</h1>
-      
+      <h1 className="text-3xl font-bold text-slate-900 tracking-tight mb-8">List your item</h1>
+
       <form onSubmit={handleSubmit} className="space-y-8">
-        <Card className="p-6 bg-zinc-950 border-zinc-800">
+        <Card className="p-6 bg-white border-slate-200 shadow-sm">
           <div className="space-y-6">
             {/* Image Upload Zone */}
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-              <AnimatePresence>
-                {images.map((file, i) => (
-                  <motion.div 
-                    key={i}
-                    initial={{ scale: 0.8, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    exit={{ scale: 0.8, opacity: 0 }}
-                    className="relative aspect-square rounded-xl overflow-hidden border border-zinc-800"
-                  >
-                    <img src={URL.createObjectURL(file)} className="object-cover w-full h-full" alt="preview" />
-                    <button 
-                      type="button"
-                      onClick={() => removeImage(i)}
-                      className="absolute top-1 right-1 p-1 bg-black/50 rounded-full hover:bg-black/80"
+            <div>
+              <label className="text-xs font-semibold uppercase text-slate-500 tracking-wide mb-3 block">
+                Photos (up to 5)
+              </label>
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                <AnimatePresence>
+                  {images.map((file, i) => (
+                    <motion.div
+                      key={i}
+                      initial={{ scale: 0.8, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      exit={{ scale: 0.8, opacity: 0 }}
+                      className="relative aspect-square rounded-xl overflow-hidden border border-slate-200 bg-slate-100"
                     >
-                      <X size={14} />
-                    </button>
-                  </motion.div>
-                ))}
-              </AnimatePresence>
-              
-              {images.length < 5 && (
-                <label className="aspect-square flex flex-col items-center justify-center border-2 border-dashed border-zinc-800 rounded-xl hover:border-blue-500 hover:bg-blue-500/5 cursor-pointer transition-all">
-                  <Plus className="text-zinc-500" />
-                  <span className="text-[10px] text-zinc-500 mt-1 uppercase tracking-widest">Add Photo</span>
-                  <input type="file" multiple className="hidden" onChange={handleImageChange} accept="image/*" />
-                </label>
-              )}
+                      <img src={URL.createObjectURL(file)} className="object-cover w-full h-full" alt="preview" />
+                      <button
+                        type="button"
+                        onClick={() => removeImage(i)}
+                        className="absolute top-2 right-2 p-1.5 bg-white/90 rounded-full hover:bg-white shadow-sm"
+                      >
+                        <X size={14} className="text-slate-600" />
+                      </button>
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
+
+                {images.length < 5 && (
+                  <label className="aspect-square flex flex-col items-center justify-center border-2 border-dashed border-slate-300 rounded-xl hover:border-indigo-400 hover:bg-indigo-50 cursor-pointer transition-all">
+                    <ImagePlus className="text-slate-400 mb-1" size={24} />
+                    <span className="text-xs text-slate-500 font-medium">Add Photo</span>
+                    <input type="file" multiple className="hidden" onChange={handleImageChange} accept="image/*" />
+                  </label>
+                )}
+              </div>
             </div>
 
             {/* Title & Price */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div className="md:col-span-3 space-y-2">
-                <label className="text-xs font-medium text-zinc-500 uppercase">Item Title</label>
-                <Input 
-                  placeholder="What are you selling?" 
-                  className="bg-zinc-900 border-zinc-800"
+                <label className="text-xs font-semibold uppercase text-slate-500 tracking-wide">Item Title</label>
+                <Input
+                  placeholder="What are you selling?"
+                  className="bg-slate-50 border-slate-200 h-11 focus:ring-indigo-500 focus:border-indigo-500"
                   value={formData.title}
-                  onChange={(e) => setFormData({...formData, title: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                   required
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-xs font-medium text-zinc-500 uppercase">Price ($)</label>
-                <Input 
-                  type="number" 
-                  placeholder="0.00" 
-                  className="bg-zinc-900 border-zinc-800"
+                <label className="text-xs font-semibold uppercase text-slate-500 tracking-wide">Price ($)</label>
+                <Input
+                  type="number"
+                  placeholder="0.00"
+                  className="bg-slate-50 border-slate-200 h-11 focus:ring-indigo-500 focus:border-indigo-500"
                   value={formData.price}
-                  onChange={(e) => setFormData({...formData, price: parseFloat(e.target.value)})}
+                  onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) })}
                   required
                 />
               </div>
@@ -135,21 +137,21 @@ export default function CreateListing() {
             {/* Category & Condition */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <label className="text-xs font-medium text-zinc-500 uppercase">Category</label>
-                <select 
-                  className="w-full h-10 px-3 rounded-md bg-zinc-900 border border-zinc-800 text-sm focus:ring-1 focus:ring-blue-500"
+                <label className="text-xs font-semibold uppercase text-slate-500 tracking-wide">Category</label>
+                <select
+                  className="w-full h-11 px-3 rounded-lg bg-slate-50 border border-slate-200 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                   value={formData.category}
-                  onChange={(e) => setFormData({...formData, category: e.target.value as Category})}
+                  onChange={(e) => setFormData({ ...formData, category: e.target.value as Category })}
                 >
                   {CATEGORIES.map(cat => <option key={cat} value={cat}>{cat.replace('_', ' ')}</option>)}
                 </select>
               </div>
               <div className="space-y-2">
-                <label className="text-xs font-medium text-zinc-500 uppercase">Condition</label>
-                <select 
-                  className="w-full h-10 px-3 rounded-md bg-zinc-900 border border-zinc-800 text-sm focus:ring-1 focus:ring-blue-500"
+                <label className="text-xs font-semibold uppercase text-slate-500 tracking-wide">Condition</label>
+                <select
+                  className="w-full h-11 px-3 rounded-lg bg-slate-50 border border-slate-200 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                   value={formData.condition}
-                  onChange={(e) => setFormData({...formData, condition: e.target.value as Condition})}
+                  onChange={(e) => setFormData({ ...formData, condition: e.target.value as Condition })}
                 >
                   {CONDITIONS.map(cond => <option key={cond} value={cond}>{cond.replace('_', ' ')}</option>)}
                 </select>
@@ -158,21 +160,21 @@ export default function CreateListing() {
 
             {/* Description */}
             <div className="space-y-2">
-              <label className="text-xs font-medium text-zinc-500 uppercase">Description</label>
-              <textarea 
-                className="w-full min-h-[120px] p-3 rounded-md bg-zinc-900 border border-zinc-800 text-sm focus:ring-1 focus:ring-blue-500"
+              <label className="text-xs font-semibold uppercase text-slate-500 tracking-wide">Description</label>
+              <textarea
+                className="w-full min-h-[120px] p-3 rounded-lg bg-slate-50 border border-slate-200 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 resize-none"
                 placeholder="Describe your item..."
                 value={formData.description}
-                onChange={(e) => setFormData({...formData, description: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               />
             </div>
           </div>
         </Card>
 
-        <Button 
-          type="submit" 
+        <Button
+          type="submit"
           disabled={loading}
-          className="w-full h-12 text-lg font-bold bg-blue-600 hover:bg-blue-700 rounded-full transition-all"
+          className="w-full h-12 text-base font-semibold bg-indigo-600 hover:bg-indigo-700 rounded-full shadow-sm transition-all"
         >
           {loading ? <Loader2 className="animate-spin" /> : "Publish Listing"}
         </Button>

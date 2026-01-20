@@ -29,51 +29,60 @@ export default function ReportManagement() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-black tracking-tighter">Reports & Moderation</h1>
-      <div className="grid gap-4">
-        {reports.map((report) => (
-          <Card key={report.id} className="bg-zinc-950 border-zinc-800 p-6 flex flex-col md:flex-row justify-between gap-6">
-            <div className="space-y-2 flex-1">
-              <div className="flex gap-2 items-center">
-                <Badge className="bg-orange-500/10 text-orange-500 border-orange-500/20">{report.reason}</Badge>
-                <span className="text-xs text-zinc-500 font-mono">ID: #{report.id}</span>
-              </div>
-              <p className="text-sm text-zinc-300">{report.description}</p>
-              <div className="pt-2 flex gap-4 text-[10px] font-bold uppercase tracking-widest text-zinc-500">
-                <span>By: {report.reporterName}</span>
-                <span>Target: {report.listingTitle}</span>
-              </div>
-            </div>
+      <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Reports & Moderation</h1>
 
-            <div className="flex flex-wrap gap-2 h-fit">
-              <Button size="sm" variant="outline" className="border-zinc-800 text-zinc-400">
-                <ExternalLink size={14} className="mr-2" /> View Listing
-              </Button>
-              <Button 
-                size="sm" 
-                variant="destructive"
-                onClick={() => handleAction(report.id, 'DELETE_LISTING')}
-              >
-                <Trash2 size={14} className="mr-2" /> Delete Listing
-              </Button>
-              <Button 
-                size="sm" 
-                variant="destructive"
-                onClick={() => handleAction(report.id, 'BLOCK_USER')}
-              >
-                <ShieldBan size={14} className="mr-2" /> Block User
-              </Button>
-              <Button 
-                size="sm" 
-                className="bg-emerald-600 hover:bg-emerald-700"
-                onClick={() => handleAction(report.id, 'RESOLVE')}
-              >
-                <CheckCircle size={14} className="mr-2" /> Resolve
-              </Button>
-            </div>
-          </Card>
-        ))}
-      </div>
+      {reports.length === 0 ? (
+        <div className="text-center py-16 bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200">
+          <CheckCircle className="h-12 w-12 text-emerald-400 mx-auto mb-4" />
+          <p className="text-slate-600 font-medium">No pending reports!</p>
+          <p className="text-slate-400 text-sm mt-1">All clear for now.</p>
+        </div>
+      ) : (
+        <div className="grid gap-4">
+          {reports.map((report) => (
+            <Card key={report.id} className="bg-white border-slate-200 p-6 flex flex-col md:flex-row justify-between gap-6 shadow-sm">
+              <div className="space-y-2 flex-1">
+                <div className="flex gap-2 items-center">
+                  <Badge className="bg-amber-100 text-amber-700 border-amber-200">{report.reason}</Badge>
+                  <span className="text-xs text-slate-400 font-mono">ID: #{report.id}</span>
+                </div>
+                <p className="text-sm text-slate-700">{report.description}</p>
+                <div className="pt-2 flex gap-4 text-xs font-medium text-slate-500">
+                  <span>By: <span className="text-slate-700">{report.reporterName}</span></span>
+                  <span>Target: <span className="text-slate-700">{report.listingTitle}</span></span>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap gap-2 h-fit">
+                <Button size="sm" variant="outline" className="border-slate-200 text-slate-600 hover:bg-slate-50">
+                  <ExternalLink size={14} className="mr-2" /> View Listing
+                </Button>
+                <Button
+                  size="sm"
+                  variant="destructive"
+                  onClick={() => handleAction(report.id, 'DELETE_LISTING')}
+                >
+                  <Trash2 size={14} className="mr-2" /> Delete Listing
+                </Button>
+                <Button
+                  size="sm"
+                  variant="destructive"
+                  onClick={() => handleAction(report.id, 'BLOCK_USER')}
+                >
+                  <ShieldBan size={14} className="mr-2" /> Block User
+                </Button>
+                <Button
+                  size="sm"
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                  onClick={() => handleAction(report.id, 'RESOLVE')}
+                >
+                  <CheckCircle size={14} className="mr-2" /> Resolve
+                </Button>
+              </div>
+            </Card>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

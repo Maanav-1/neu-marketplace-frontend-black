@@ -14,37 +14,55 @@ export default function ListingCard({ item }: { item: Listing }) {
 
   return (
     <Link to={`/listings/${item.slug}`}>
-      <motion.div whileHover={{ y: -5 }} transition={{ type: "spring", stiffness: 300 }}>
-        <Card className="group overflow-hidden border-zinc-800 bg-zinc-950 rounded-2xl relative">
+      <motion.div
+        whileHover={{ y: -4 }}
+        transition={{ type: "spring", stiffness: 400, damping: 25 }}
+      >
+        <Card className="group overflow-hidden border-slate-200 bg-white rounded-2xl relative shadow-sm hover:shadow-lg transition-shadow duration-300">
           {/* Expiring Soon Badge */}
           {isExpiringSoon && (
             <div className="absolute top-3 right-3 z-10">
-              <Badge className="bg-red-500/10 text-red-500 border-red-500/20 backdrop-blur-md px-2 py-1 flex gap-1 items-center">
+              <Badge className="bg-rose-50 text-rose-600 border-rose-200 px-2 py-1 flex gap-1 items-center">
                 <Clock size={10} className="animate-pulse" />
-                <span className="text-[10px] font-black uppercase tracking-widest">{diffDays} days left</span>
+                <span className="text-xs font-semibold">{diffDays} days left</span>
               </Badge>
             </div>
           )}
 
-          <div className="aspect-square relative overflow-hidden bg-zinc-900">
+          {/* Image Container */}
+          <div className="aspect-square relative overflow-hidden bg-slate-100">
             {item.images && item.images[0] ? (
-              <img 
-                src={item.images[0].imageUrl} 
-                className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-500" 
-                alt={item.title} 
+              <img
+                src={item.images[0].imageUrl}
+                className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500"
+                alt={item.title}
               />
             ) : (
-              <div className="flex items-center justify-center h-full text-zinc-700 font-bold text-xs uppercase tracking-widest">No Image</div>
+              <div className="flex items-center justify-center h-full text-slate-400 font-medium text-sm">
+                No Image
+              </div>
             )}
+
+            {/* Category Badge */}
             <div className="absolute top-3 left-3">
-              <Badge className="bg-black/60 backdrop-blur-md border-zinc-700">{item.categoryDisplayName}</Badge>
+              <Badge className="bg-white/90 backdrop-blur-sm border-slate-200 text-slate-700 font-medium shadow-sm">
+                {item.categoryDisplayName}
+              </Badge>
             </div>
           </div>
-          <div className="p-4 space-y-1">
-            <h3 className="font-bold text-lg truncate tracking-tight">{item.title}</h3>
+
+          {/* Content */}
+          <div className="p-4 space-y-2">
+            <h3 className="font-semibold text-slate-900 text-base truncate group-hover:text-indigo-600 transition-colors">
+              {item.title}
+            </h3>
             <div className="flex justify-between items-center">
-              <span className="text-xl font-black text-blue-500">${item.price}</span>
-              <span className="text-xs text-zinc-500 uppercase font-medium">{item.conditionDisplayName}</span>
+              <span className="text-xl font-bold text-indigo-600">
+                ${item.price}
+              </span>
+              <span className="text-xs text-slate-500 font-medium bg-slate-100 px-2 py-1 rounded-full">
+                {item.conditionDisplayName}
+              </span>
             </div>
           </div>
         </Card>
