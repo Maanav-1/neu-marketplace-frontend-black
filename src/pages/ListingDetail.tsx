@@ -10,7 +10,8 @@ import {
   Trash2,
   CheckCircle2,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Shield
 } from 'lucide-react';
 import api from '@/api/client';
 import { useAuthStore } from '@/store/authStore';
@@ -105,6 +106,19 @@ export default function ListingDetail() {
     }
   };
 
+  const handleAdminDelete = async () => {
+    setIsDeleting(true);
+    try {
+      await api.delete(`/admin/listings/${listing?.id}`);
+      toast({ title: "Deleted", description: "Listing removed by admin." });
+      navigate('/');
+    } catch (err) {
+      toast({ variant: "destructive", title: "Error", description: "Failed to delete listing." });
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   const handleMarkAsSold = async () => {
     setIsMarkingSold(true);
     try {
@@ -174,8 +188,8 @@ export default function ListingDetail() {
                   key={img.id}
                   onClick={() => setCurrentImage(i)}
                   className={`h-14 w-14 rounded overflow-hidden border-2 shrink-0 transition-all ${currentImage === i
-                      ? 'border-black'
-                      : 'border-gray-200 opacity-60 hover:opacity-100'
+                    ? 'border-black'
+                    : 'border-gray-200 opacity-60 hover:opacity-100'
                     }`}
                 >
                   <img src={img.imageUrl} className="object-cover w-full h-full" alt="" />
@@ -265,6 +279,36 @@ export default function ListingDetail() {
             </div>
           )}
 
+          {/* Admin Controls */}
+          {user?.role === 'ADMIN' && user?.id !== listing.seller.id && (
+            <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg space-y-3">
+              <p className="text-xs font-medium text-gray-500 uppercase tracking-wide flex items-center gap-1">
+                <Shield size={12} /> Admin Actions
+              </p>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="outline" className="w-full h-9 text-sm text-red-600 border-gray-200 hover:bg-red-50">
+                    <Trash2 size={14} className="mr-1.5" /> Delete Listing
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent className="bg-white border-gray-200">
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Admin Delete?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Are you sure you want to delete this listing? This action cannot be undone.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel className="border-gray-200">Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleAdminDelete} className="bg-red-600 hover:bg-red-700 text-white">
+                      {isDeleting ? "Deleting..." : "Delete"}
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </div>
+          )}
+
           {/* Description */}
           <div className="space-y-2">
             <h3 className="text-xs font-medium text-gray-500 uppercase tracking-wide">Description</h3>
@@ -288,8 +332,8 @@ export default function ListingDetail() {
               <Button
                 variant="outline"
                 className={`h-10 w-10 border-gray-200 ${listing.isSaved
-                    ? 'text-red-500 bg-red-50 hover:bg-red-100'
-                    : 'text-gray-400 hover:text-red-500 hover:bg-red-50'
+                  ? 'text-red-500 bg-red-50 hover:bg-red-100'
+                  : 'text-gray-400 hover:text-red-500 hover:bg-red-50'
                   }`}
                 onClick={handleToggleSave}
                 disabled={isSaving}
