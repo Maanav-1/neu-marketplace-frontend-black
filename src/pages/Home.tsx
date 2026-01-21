@@ -14,6 +14,7 @@ import { useAuthStore } from '@/store/authStore';
 import type { Listing, Category, Condition, PagedResponse } from '@/types';
 
 export default function Home() {
+  // Initialize with an empty array to prevent undefined errors
   const [listings, setListings] = useState<Listing[]>([]);
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState<Category | 'ALL'>('ALL');
@@ -50,17 +51,21 @@ export default function Home() {
 
       if (filters.condition !== 'ALL') params.condition = filters.condition;
 
+      // The backend returns a PagedResponse object
       const { data } = await api.get<PagedResponse<Listing>>('/listings', { params });
 
+      // We access data.content because of the backend PagedResponse DTO structure
       if (isNewSearch) {
-        setListings(data.content);
+        setListings(data.content || []);
       } else {
-        setListings(prev => [...prev, ...data.content]);
+        setListings(prev => [...prev, ...(data.content || [])]);
       }
 
       setIsLastPage(data.last);
     } catch (err) {
       console.error("Failed to fetch listings:", err);
+      // Ensure state isn't left undefined on error
+      if (isNewSearch) setListings([]);
     } finally {
       setLoading(false);
       setLoadingMore(false);
@@ -136,7 +141,8 @@ export default function Home() {
               )}
             </div>
             <span className="text-xs text-gray-400">
-              {listings.length} items
+              {/* Optional chaining safely handles the pre-fetch state */}
+              {listings?.length || 0} items
             </span>
           </div>
 
@@ -152,7 +158,7 @@ export default function Home() {
                   </div>
                 ))}
               </div>
-            ) : listings.length > 0 ? (
+            ) : listings?.length > 0 ? (
               <div className="space-y-8">
                 <motion.div
                   initial={{ opacity: 0 }}

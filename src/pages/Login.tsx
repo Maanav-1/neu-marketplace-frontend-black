@@ -58,10 +58,10 @@ export default function Login() {
   };
 
 
-const handleGoogleLogin = () => {
-  const authUrl = import.meta.env.VITE_AUTH_URL || 'http://localhost:8080';
-  window.location.href = `${authUrl}/oauth2/authorization/google`;
-};
+  const handleGoogleLogin = () => {
+    const authUrl = import.meta.env.VITE_AUTH_URL || 'http://localhost:8080';
+    window.location.href = `${authUrl}/oauth2/authorization/google`;
+  };
 
   return (
     <div className="flex flex-col justify-center items-center min-h-[80vh] px-4">
@@ -88,7 +88,7 @@ const handleGoogleLogin = () => {
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <Input
                   type="email"
-                  placeholder="you@northeastern.edu"
+                  placeholder="you@email.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="bg-white border-gray-200 pl-10 h-10 focus:border-gray-400 focus:ring-0"

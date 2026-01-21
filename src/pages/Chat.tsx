@@ -13,23 +13,44 @@ export default function Chat() {
   const [newMessage, setNewMessage] = useState('');
   const [sending, setSending] = useState(false);
 
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const prevMessageCountRef = useRef(0);
+  const lastMsgHashRef = useRef("");
 
   const scrollToBottom = useCallback(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (scrollContainerRef.current) {
+      const { scrollHeight, clientHeight } = scrollContainerRef.current;
+      scrollContainerRef.current.scrollTo({
+        top: scrollHeight - clientHeight,
+        behavior: 'smooth'
+      });
+    }
   }, []);
 
   const fetchChatData = async () => {
     try {
       const { data: msgData } = await api.get(`/conversations/${conversationId}/messages`);
+      const newHash = JSON.stringify(msgData);
 
-      if (msgData.length > prevMessageCountRef.current) {
+      if (newHash !== lastMsgHashRef.current) {
+        const isNewMessages = msgData.length > prevMessageCountRef.current;
+        const isFirstLoad = prevMessageCountRef.current === 0;
+
+        // Check if user is near bottom BEFORE updating state
+        // (Use a small threshold like 100px)
+        const container = scrollContainerRef.current;
+        const isNearBottom = container
+          ? container.scrollHeight - container.scrollTop - container.clientHeight < 100
+          : true; // Default to true if not found (shouldn't happen)
+
         prevMessageCountRef.current = msgData.length;
+        lastMsgHashRef.current = newHash;
         setMessages(msgData);
-        setTimeout(scrollToBottom, 100);
-      } else {
-        setMessages(msgData);
+
+        // Only auto-scroll if it's the first load OR user is already at the bottom
+        if (isNewMessages && (isFirstLoad || isNearBottom)) {
+          setTimeout(scrollToBottom, 100);
+        }
       }
 
       const { data: convData } = await api.get(`/conversations/${conversationId}`);
@@ -85,7 +106,7 @@ export default function Chat() {
       </div>
 
       {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto px-4 py-4">
+      <div ref={scrollContainerRef} className="flex-1 overflow-y-auto px-4 py-4">
         <div className="space-y-2">
           {messages.length === 0 && (
             <p className="text-center text-gray-400 text-sm py-10">No messages yet. Start the conversation!</p>
@@ -93,14 +114,14 @@ export default function Chat() {
           {messages.map((msg) => (
             <div key={msg.id} className={`flex ${msg.isOwnMessage ? 'justify-end' : 'justify-start'}`}>
               <div className={`max-w-[75%] px-3 py-2 rounded-lg text-sm ${msg.isOwnMessage
-                  ? 'bg-black text-white'
-                  : 'bg-gray-100 text-gray-800'
+                ? 'bg-black text-white'
+                : 'bg-gray-100 text-gray-800'
                 }`}>
                 {msg.content}
               </div>
             </div>
           ))}
-          <div ref={messagesEndRef} />
+
         </div>
       </div>
 
