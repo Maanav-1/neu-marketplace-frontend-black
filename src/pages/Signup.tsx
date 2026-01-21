@@ -75,9 +75,11 @@ export default function Signup() {
     }
   };
 
-  const handleGoogleSignup = () => {
-    window.location.href = 'http://localhost:8080/oauth2/authorization/google';
-  };
+
+const handleGoogleSignup = () => {
+  const authUrl = import.meta.env.VITE_AUTH_URL || 'http://localhost:8080';
+  window.location.href = `${authUrl}/oauth2/authorization/google`;
+};
 
   return (
     <div className="flex flex-col justify-center items-center min-h-[85vh] px-4 py-12">
