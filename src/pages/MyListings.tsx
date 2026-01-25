@@ -62,7 +62,7 @@ export default function MyListings() {
         setBumpingId(listingId);
         try {
             await api.patch(`/listings/${listingId}/bump`);
-            toast({ title: "Renewed", description: "Listing active for 30 more days." });
+            toast({ title: "Renewed successfully!", description: "Your post is now 'new' again and expires in 360 days." });
             fetchListings();
         } catch (err) {
             toast({ variant: "destructive", title: "Error", description: "Could not renew." });
